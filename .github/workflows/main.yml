@@ -8,57 +8,49 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
-
 jobs:
-  test-typescript:
-    name: TypeScript Tests
+  unit-tests:
+    name: Static Analysis and Unit Tests
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        id: checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        id: setup-node
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
           cache: npm
 
-      - name: Install Dependencies
-        id: npm-ci
+      - name: Install dependencies
         run: npm ci
 
-      - name: Check Format
-        id: npm-format-check
+      - name: Check formatting
         run: npm run format:check
 
       - name: Lint
-        id: npm-lint
         run: npm run lint
 
       - name: Test
-        id: npm-ci-test
         run: npm run ci-test
 
-  test-action:
-    name: GitHub Actions Test
+  action-tests:
+    name: Action Tests
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        id: checkout
         uses: actions/checkout@v4
 
-      - name: Test Local Action
-        id: test-action
-        uses: ./
+      - uses: actions/setup-python@v5
         with:
-          milliseconds: 2000
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: '.github/requirements.txt'
 
-      - name: Print Output
-        id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+      - name: Install conan
+        run: pip install conan
+
+      - name: Test local action
+        uses: ./
