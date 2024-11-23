@@ -9,7 +9,7 @@ export async function run(): Promise<void> {
     try {
         const version = await conan_version();
         if (version != null) {
-            core.info(`conan ${version} is installed.`);
+            core.info(`conan ${version.toString()} is installed.`);
         } else {
             core.setFailed("conan is not installed.");
         }
