@@ -5,6 +5,12 @@ class Version {
     minor: number;
     patch: number;
 
+    constructor(major: number, minor: number, patch: number) {
+        this.major = major;
+        this.minor = minor;
+        this.patch = patch;
+    }
+
     toString(): string {
         return `${this.major}.${this.minor}.${this.patch}`;
     }
@@ -22,9 +28,9 @@ export async function conan_version(): Promise<Version | null> {
     if (matchResult == null) {
         return null;
     }
-    return {
-        major: Number.parseInt(matchResult[1]),
-        minor: Number.parseInt(matchResult[2]),
-        patch: Number.parseInt(matchResult[3]),
-    };
+    return new Version(
+        Number.parseInt(matchResult[1]),
+        Number.parseInt(matchResult[2]),
+        Number.parseInt(matchResult[3]),
+    );
 }
