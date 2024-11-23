@@ -5,7 +5,7 @@ on:
 
 jobs:
   unit-tests:
-    name: Unit Tests
+    name: Static Analysis and Unit Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -20,3 +20,23 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run ci-test
+
+  action-tests:
+    name: Action Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Test local action
+        uses: ./

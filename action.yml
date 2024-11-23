@@ -1,0 +1,7 @@
+name: Conan Setup
+description: Sets up the Conan Package Manager
+author: Andrew Marshall
+
+runs:
+  using: node20
+  main: dist/index.js
