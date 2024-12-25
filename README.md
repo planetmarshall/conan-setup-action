@@ -35,5 +35,5 @@ Development
    ```
 4. Test using Github's [Local Action](https://github.com/github/local-action) utility
     ```
-    npx local-action . src/main.ts .env.example
+    npx local-action . src/save.ts .env.example
     ```

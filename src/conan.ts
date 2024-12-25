@@ -1,4 +1,7 @@
-import { getExecOutput } from "@actions/exec";
+import { getExecOutput, exec } from "@actions/exec";
+import * as core from "@actions/core";
+import { saveCache } from "@actions/cache";
+import * as process from "node:process";
 
 class Version {
     major: number;
@@ -33,4 +36,19 @@ export async function conan_version(): Promise<Version | null> {
         Number.parseInt(matchResult[2]),
         Number.parseInt(matchResult[3]),
     );
+}
+
+export async function conan_cache_save(key: string): Promise<void> {
+    await exec("conan", ["cache", "clean"]);
+    await exec("conan", [
+        "cache",
+        "save",
+        "--core-conf",
+        "core.gzip:compresslevel=0",
+        "*",
+    ]);
+    const tempdir = process.env["RUNNER_TEMP"];
+    const cacheFile = `${tempdir}/conan-cache.tgz`;
+    core.debug(`Writing cache file to ${cacheFile}`);
+    await saveCache([cacheFile], key);
 }

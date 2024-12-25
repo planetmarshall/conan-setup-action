@@ -5,7 +5,7 @@ import { conan_version } from "./conan";
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-export async function run(): Promise<void> {
+async function run(): Promise<void> {
     try {
         const version = await conan_version();
         if (version != null) {
@@ -18,3 +18,5 @@ export async function run(): Promise<void> {
         if (error instanceof Error) core.setFailed(error.message);
     }
 }
+
+run();
