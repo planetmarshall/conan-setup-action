@@ -58,7 +58,7 @@ export async function restore_cache(key: string): Promise<void> {
 
 export async function save_cache(key: string): Promise<void> {
     core.startGroup("prepare the cache file");
-    await exec("conan", ["cache", "clean", "*"]);
+    //await exec("conan", ["cache", "clean", "*"]);
     const tempdir = process.env["RUNNER_TEMP"];
     const cacheFile = `${tempdir}/conan-cache.tgz`;
     core.debug(`Writing cache file to ${cacheFile}`);
