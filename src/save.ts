@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { conan_cache_save } from "./conan";
+import * as conan from "./conan";
 
 /**
  * The main function for the action.
@@ -7,7 +7,7 @@ import { conan_cache_save } from "./conan";
  */
 async function post(): Promise<void> {
     try {
-        await conan_cache_save("foo");
+        await conan.save_cache("foo");
     } catch (error) {
         // Fail the workflow run if an error occurs
         if (error instanceof Error) core.setFailed(error.message);

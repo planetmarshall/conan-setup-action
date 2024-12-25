@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { conan_version } from "./conan";
+import * as conan from "./conan";
 
 /**
  * The main function for the action.
@@ -7,7 +7,7 @@ import { conan_version } from "./conan";
  */
 async function run(): Promise<void> {
     try {
-        const version = await conan_version();
+        const version = await conan.version();
         if (version != null) {
             core.info(`conan ${version.toString()} is installed.`);
         } else {

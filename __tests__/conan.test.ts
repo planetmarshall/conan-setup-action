@@ -1,5 +1,5 @@
 import { describe, expect, test, jest } from "@jest/globals";
-import { conan_version, conan_cache_save } from "../src/conan";
+import * as conan from "../src/conan";
 
 jest.mock("@actions/exec", () => ({
     getExecOutput: jest.fn(),
@@ -20,12 +20,13 @@ describe("conan module", () => {
                 stderr: "",
             }),
         );
-        const version = await conan_version();
+        const version = await conan.version();
         expect(version).toEqual({ major: 2, minor: 8, patch: 0 });
     });
 
     test("save cache to github", async () => {
-        await conan_cache_save("key");
+        process.env.RUNNER_TEMP = "/faketmp";
+        await conan.save_cache("key");
 
         expect(exec).toHaveBeenCalledWith("conan", ["cache", "clean"]);
         expect(exec).toHaveBeenCalledWith("conan", [
@@ -33,6 +34,8 @@ describe("conan module", () => {
             "save",
             "--core-conf",
             "core.gzip:compresslevel=0",
+            "--file",
+            "/faketmp/conan-cache.tgz",
             "*",
         ]);
         expect(saveCache).toBeCalled();

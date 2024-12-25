@@ -19,7 +19,7 @@ class Version {
     }
 }
 
-export async function conan_version(): Promise<Version | null> {
+export async function version(): Promise<Version | null> {
     const semverRegex = /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)/;
     const output = await getExecOutput("conan", ["--version"], {
         silent: true,
@@ -38,17 +38,19 @@ export async function conan_version(): Promise<Version | null> {
     );
 }
 
-export async function conan_cache_save(key: string): Promise<void> {
+export async function save_cache(key: string): Promise<void> {
     await exec("conan", ["cache", "clean"]);
+    const tempdir = process.env["RUNNER_TEMP"];
+    const cacheFile = `${tempdir}/conan-cache.tgz`;
+    core.debug(`Writing cache file to ${cacheFile}`);
     await exec("conan", [
         "cache",
         "save",
         "--core-conf",
         "core.gzip:compresslevel=0",
+        "--file",
+        cacheFile,
         "*",
     ]);
-    const tempdir = process.env["RUNNER_TEMP"];
-    const cacheFile = `${tempdir}/conan-cache.tgz`;
-    core.debug(`Writing cache file to ${cacheFile}`);
     await saveCache([cacheFile], key);
 }
