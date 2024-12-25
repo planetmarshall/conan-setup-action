@@ -38,7 +38,13 @@ export async function version(): Promise<Version | null> {
     );
 }
 
+export async function cache_key(): Promise<string> {
+    const v = await version();
+    return `conan-${core.platform.platform}-${core.platform.arch}-${v}`;
+}
+
 export async function save_cache(key: string): Promise<void> {
+    core.startGroup("prepare the cache file")
     await exec("conan", ["cache", "clean"]);
     const tempdir = process.env["RUNNER_TEMP"];
     const cacheFile = `${tempdir}/conan-cache.tgz`;
@@ -47,10 +53,12 @@ export async function save_cache(key: string): Promise<void> {
         "cache",
         "save",
         "--core-conf",
+        // Don't compress the cache file as it will be compressed by ZSTD before upload
         "core.gzip:compresslevel=0",
         "--file",
         cacheFile,
         "*",
     ]);
+    core.endGroup()
     await saveCache([cacheFile], key);
 }

@@ -1,2 +1,3 @@
 [requires]
 gtest/1.15.0
+zlib/1.3.1

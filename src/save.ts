@@ -7,7 +7,9 @@ import * as conan from "./conan";
  */
 async function post(): Promise<void> {
     try {
-        await conan.save_cache("foo");
+        const key = await conan.cache_key();
+        core.debug(`Saving cache with key: ${key}`);
+        await conan.save_cache(key);
     } catch (error) {
         // Fail the workflow run if an error occurs
         if (error instanceof Error) core.setFailed(error.message);
