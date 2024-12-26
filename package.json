@@ -2,6 +2,8 @@
   "name": "conan-setup-action",
   "version": "0.0.1",
   "description": "",
+  "main": "dist/main/index.js",
+  "packageManager": "npm",
   "scripts": {
     "bundle": "npm run format:write && npm run package",
     "ci-test": "npx jest",
@@ -9,7 +11,7 @@
     "format:check": "npx prettier --check .",
     "format:write": "npx prettier --write .",
     "lint": "npx eslint .",
-    "package": "npx ncc build src/index.ts -o dist --minify --source-map --license licenses.txt",
+    "package": "npx ncc build src/save.ts -o dist/save --minify --source-map --license licenses.txt && npx ncc build src/main.ts -o dist/main --minify --source-map --license licenses.txt",
     "all": "npm run format:write && npm run lint && npm run test && npm run package"
   },
   "repository": {
@@ -17,9 +19,6 @@
     "url": "https://github.com/planetmarshall/conan-setup-action.git"
   },
   "private": true,
-  "exports": {
-    ".": "./dist/index.js"
-  },
   "engines": {
     "node": ">=21"
   },
@@ -34,9 +33,11 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.15.0"
+    "typescript-eslint": "^8.15.0",
+    "@vercel/ncc": "^0.38.3"
   },
   "dependencies": {
+    "@actions/cache": "^4.0.0",
     "@actions/core": "^1.11.1",
     "@actions/exec": "^1.1.1"
   }
