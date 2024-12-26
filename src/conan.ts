@@ -43,17 +43,21 @@ export async function cache_key(): Promise<string> {
     return `conan-${core.platform.platform}-${core.platform.arch}-${v}`;
 }
 
-export async function restore_cache(key: string): Promise<void> {
+export async function restore_cache(key: string): Promise<boolean> {
     const tempdir = process.env["RUNNER_TEMP"];
     const cacheFile = `${tempdir}/conan-cache.tgz`;
     const cacheHitKey = await cache.restoreCache([cacheFile], key);
     if (cacheHitKey == null) {
         core.info(`No cache hit found for ${key}`);
-    } else {
-        core.info(`Cache hit. Restoring cache for key ${cacheHitKey}`);
+        return false;
+    } else if (cacheHitKey === key) {
+        core.info(`Cache hit on primary key: ${key}`);
         core.debug(`Restoring cache file to ${cacheFile}`);
         await exec("conan", ["cache", "restore", cacheFile]);
+        return true;
     }
+
+    return false;
 }
 
 export async function save_cache(key: string): Promise<void> {

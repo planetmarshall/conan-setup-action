@@ -10,7 +10,7 @@ async function run(): Promise<void> {
         const version = await conan.version();
         if (version != null) {
             core.info(`conan ${version.toString()} is installed.`);
-            core.startGroup("restoring cache");
+            core.startGroup("Restoring Cache");
             const key = await conan.cache_key();
             await conan.restore_cache(key);
         } else {

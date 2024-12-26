@@ -6,10 +6,13 @@ jest.mock("@actions/exec", () => ({
     exec: jest.fn(),
 }));
 
-jest.mock("@actions/cache", () => ({ saveCache: jest.fn() }));
+jest.mock("@actions/cache", () => ({
+    restoreCache: jest.fn(),
+    saveCache: jest.fn()
+}));
 
 import { getExecOutput, exec } from "@actions/exec";
-import { saveCache } from "@actions/cache";
+import { restoreCache, saveCache } from "@actions/cache";
 
 describe("conan module", () => {
     test("get version if conan is installed", async () => {
@@ -22,6 +25,31 @@ describe("conan module", () => {
         );
         const version = await conan.version();
         expect(version).toEqual({ major: 2, minor: 8, patch: 0 });
+    });
+
+    test("cache is restored if cache hit", async () => {
+        process.env.RUNNER_TEMP = "/faketmp";
+        const cacheKey = "12345-key"
+        const cacheFile = "/faketmp/conan-cache.tgz";
+        jest.mocked(restoreCache).mockReturnValueOnce(Promise.resolve(cacheKey));
+
+        await conan.restore_cache(cacheKey);
+        expect(restoreCache).toBeCalledWith([cacheFile], cacheKey)
+
+        expect(exec).toHaveBeenCalledWith("conan", [
+            "cache",
+            "restore",
+            cacheFile
+        ]);
+    });
+
+    test("return true if there is a cache hit on the primary key", async () => {
+        process.env.RUNNER_TEMP = "/faketmp";
+        const cacheKey = "12345-key"
+        jest.mocked(restoreCache).mockReturnValueOnce(Promise.resolve(cacheKey));
+
+        const isPrimaryCacheHit = await conan.restore_cache(cacheKey);
+        expect(isPrimaryCacheHit).toBe(true);
     });
 
     test("save cache to github", async () => {
