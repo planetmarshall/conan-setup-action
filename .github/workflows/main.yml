@@ -58,6 +58,4 @@ jobs:
       - name: Install packages
         run: |
           conan profile detect
-          find ~/.conan2 -name libz.a
-          conan graph explain
-          conan install .github
+          conan install .github --build missing
