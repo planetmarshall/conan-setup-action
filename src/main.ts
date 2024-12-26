@@ -1,4 +1,5 @@
 import * as core from "@actions/core";
+import { Constants } from "./constants";
 import * as conan from "./conan";
 
 /**
@@ -12,7 +13,8 @@ async function run(): Promise<void> {
             core.info(`conan ${version.toString()} is installed.`);
             core.startGroup("Restoring Cache");
             const key = await conan.cache_key();
-            await conan.restore_cache(key);
+            const primaryCacheHit = await conan.restore_cache(key);
+            core.saveState(Constants.PrimaryCacheHit, primaryCacheHit);
         } else {
             core.setFailed("conan is not installed.");
         }
