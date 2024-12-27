@@ -45,7 +45,7 @@ describe("conan module", () => {
         const profiles = await conan.installed_profiles();
         expect(profiles).toContain("default");
         expect(profiles).toContain("gcc");
-    })
+    });
 
     test("cache is restored if cache hit", async () => {
         process.env.RUNNER_TEMP = "/faketmp";
