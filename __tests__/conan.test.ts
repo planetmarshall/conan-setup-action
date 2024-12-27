@@ -27,6 +27,21 @@ describe("conan module", () => {
         expect(version).toEqual({ major: 2, minor: 8, patch: 0 });
     });
 
+    test("list installed profiles", async () => {
+        const profiles_json: string = '[ "default", "gcc" ]';
+        jest.mocked(getExecOutput).mockReturnValueOnce(
+            Promise.resolve({
+                stdout: profiles_json,
+                exitCode: 0,
+                stderr: "",
+            }),
+        );
+
+        const profiles = await conan.installed_profiles();
+        expect(profiles).toContain("default");
+        expect(profiles).toContain("gcc");
+    })
+
     test("cache is restored if cache hit", async () => {
         process.env.RUNNER_TEMP = "/faketmp";
         const cacheKey = "12345-key";

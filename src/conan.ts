@@ -38,6 +38,16 @@ export async function version(): Promise<Version | null> {
     );
 }
 
+export async function installed_profiles(): Promise<string[]> {
+    const output = await getExecOutput("conan", [
+        "profile",
+        "list",
+        "--format",
+        "json",
+    ]);
+    return JSON.parse(output.stdout);
+}
+
 export async function cache_key(): Promise<string> {
     const v = await version();
     return `conan-${core.platform.platform}-${core.platform.arch}-${v}`;
