@@ -38,6 +38,10 @@ export async function version(): Promise<Version | null> {
     );
 }
 
+export async function detect_default_profile(): Promise<void> {
+    await exec("conan", ["profile", "detect"]);
+}
+
 export async function installed_profiles(): Promise<string[]> {
     const output = await getExecOutput("conan", [
         "profile",

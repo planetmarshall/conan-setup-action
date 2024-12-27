@@ -27,6 +27,11 @@ describe("conan module", () => {
         expect(version).toEqual({ major: 2, minor: 8, patch: 0 });
     });
 
+    test("detect default profile", async () => {
+        await conan.detect_default_profile();
+        expect(exec).toBeCalledWith("conan", ["profile", "detect"]);
+    });
+
     test("list installed profiles", async () => {
         const profiles_json: string = '[ "default", "gcc" ]';
         jest.mocked(getExecOutput).mockReturnValueOnce(
