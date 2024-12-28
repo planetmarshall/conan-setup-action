@@ -9,7 +9,7 @@ import * as conan from "./conan";
 async function post(): Promise<void> {
     try {
         const primaryCacheHit = core.getState(Constants.PrimaryCacheHit);
-        if (primaryCacheHit) {
+        if (JSON.parse(primaryCacheHit)) {
             core.info("Cache hit on primary key. Cache will not be saved");
         } else {
             core.startGroup("Saving cache");
