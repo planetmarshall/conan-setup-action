@@ -11,6 +11,10 @@ async function run(): Promise<void> {
         const version = await conan.version();
         if (version != null) {
             core.info(`conan ${version.toString()} is installed.`);
+            const profiles = await conan.installed_profiles();
+            if (!profiles.includes("default")) {
+                await conan.detect_default_profile();
+            }
             core.startGroup("Restoring Cache");
             const key = await conan.cache_key();
             const primaryCacheHit = await conan.restore_cache(key);
