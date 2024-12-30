@@ -18,6 +18,9 @@ async function post(): Promise<void> {
             await conan.save_cache(key);
             core.endGroup();
         }
+        // Explicit process.exit() to not wait for hanging promises,
+        // see https://github.com/actions/setup-node/issues/878
+        process.exit();
     } catch (error) {
         // Fail the workflow run if an error occurs
         if (error instanceof Error) core.setFailed(error.message);
