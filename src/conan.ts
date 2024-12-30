@@ -1,7 +1,7 @@
 import { getExecOutput, exec } from "@actions/exec";
 import * as core from "@actions/core";
 import * as cache from "@actions/cache";
-import * as process from "node:process";
+import * as utils from "./utils";
 
 class Version {
     major: number;
@@ -43,18 +43,22 @@ export async function detect_default_profile(): Promise<void> {
 }
 
 export async function installed_profiles(): Promise<string[]> {
-    const output = await getExecOutput("conan", [
-        "profile",
-        "list",
-        "--format",
-        "json",
-    ]);
+    const output = await getExecOutput(
+        "conan",
+        ["profile", "list", "--format", "json"],
+        { silent: true },
+    );
     return JSON.parse(output.stdout);
 }
 
 export async function cache_key(): Promise<string> {
     const v = await version();
-    return `conan-${core.platform.platform}-${core.platform.arch}-${v}`;
+    const result = await getExecOutput(
+        "conan",
+        ["profile", "show", "--format", "json"],
+        { silent: true },
+    );
+    return `conan-${v}-${utils.profile_hash_from_json(result.stdout)}`;
 }
 
 export async function restore_cache(key: string): Promise<boolean> {

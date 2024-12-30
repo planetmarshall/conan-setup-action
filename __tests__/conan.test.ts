@@ -32,6 +32,19 @@ describe("conan module", () => {
         expect(exec).toBeCalledWith("conan", ["profile", "detect"]);
     });
 
+    test("get default cache key", async () => {
+        jest.mocked(getExecOutput).mockReturnValue(
+            Promise.resolve({
+                stdout: "{}",
+                exitCode: 0,
+                stderr: "",
+            }),
+        );
+
+        const key = await conan.cache_key();
+        expect(key).toMatch(/^conan-.+$/);
+    });
+
     test("list installed profiles", async () => {
         const profiles_json: string = '[ "default", "gcc" ]';
         jest.mocked(getExecOutput).mockReturnValueOnce(
