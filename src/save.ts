@@ -8,12 +8,13 @@ import * as conan from "./conan";
  */
 async function post(): Promise<void> {
     try {
+        const forceSave = core.getBooleanInput(Constants.ForceSaveInput);
         const primaryCacheHit = core.getState(Constants.PrimaryCacheHit);
-        if (JSON.parse(primaryCacheHit)) {
+        if (JSON.parse(primaryCacheHit) && !forceSave) {
             core.info("Cache hit on primary key. Cache will not be saved");
         } else {
             core.startGroup("Saving cache");
-            const key = await conan.cache_key();
+            const key = await conan.cache_key(forceSave);
             core.debug(`Saving cache with key: ${key}`);
             await conan.save_cache(key);
             core.endGroup();

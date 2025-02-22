@@ -52,7 +52,9 @@ export async function installed_profiles(): Promise<string[]> {
     return JSON.parse(output.stdout);
 }
 
-export async function cache_key(): Promise<string> {
+export async function cache_key(
+    useTimestamp: boolean = false,
+): Promise<string> {
     const v = await version();
     let key = core.getInput(Constants.CacheKeyInput);
     if (key.length == 0) {
@@ -63,13 +65,16 @@ export async function cache_key(): Promise<string> {
         );
         key = utils.profile_hash_from_json(result.stdout);
     }
+    if (useTimestamp) {
+        return `conan-v${v}-${key}-${Date.now()}`;
+    }
     return `conan-v${v}-${key}`;
 }
 
 export async function restore_cache(key: string): Promise<boolean> {
     const tempdir = process.env["RUNNER_TEMP"];
     const cacheFile = `${tempdir}/conan-cache.tgz`;
-    const cacheHitKey = await cache.restoreCache([cacheFile], key);
+    const cacheHitKey = await cache.restoreCache([cacheFile], key, [key]);
     if (cacheHitKey == null) {
         core.info(`No cache hit found for ${key}`);
         return false;

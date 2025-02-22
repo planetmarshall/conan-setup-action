@@ -5,6 +5,9 @@ inputs:
   cache-key:
     description: 'explicitly specify the cache key to use'
     required: false
+  force-save:
+    description: 'forces saving of the cache even if there was a cache hit by appending a timestamp'
+    required: false
 runs:
   using: node20
   main: dist/main/index.js

@@ -19,6 +19,8 @@ jest.mock("@actions/core", () => ({
     endGroup: jest.fn(),
 }));
 
+jest.useFakeTimers().setSystemTime(new Date("2025-01-01"));
+
 import { getExecOutput, exec } from "@actions/exec";
 import { restoreCache, saveCache } from "@actions/cache";
 import { getInput } from "@actions/core";
@@ -66,7 +68,23 @@ describe("conan module", () => {
         jest.mocked(getInput).mockReturnValue("linux-x86_64-cache-key");
         const key = await conan.cache_key();
         expect(getInput).toBeCalledWith("cache-key");
-        expect(key).toMatch(/^conan-v2.8.0-linux-x86_64-cache-key$/);
+        expect(key).toEqual("conan-v2.8.0-linux-x86_64-cache-key");
+    });
+
+    test("get cache key if forcing save", async () => {
+        jest.mocked(getExecOutput).mockReturnValueOnce(
+            Promise.resolve({
+                stdout: "Conan version 2.8.0",
+                exitCode: 0,
+                stderr: "",
+            }),
+        );
+        jest.mocked(getInput).mockReturnValue("linux-x86_64-cache-key");
+        const key = await conan.cache_key(true);
+        expect(getInput).toBeCalledWith("cache-key");
+        expect(key).toEqual(
+            "conan-v2.8.0-linux-x86_64-cache-key-1735689600000",
+        );
     });
 
     test("list installed profiles", async () => {
@@ -93,7 +111,7 @@ describe("conan module", () => {
         );
 
         await conan.restore_cache(cacheKey);
-        expect(restoreCache).toBeCalledWith([cacheFile], cacheKey);
+        expect(restoreCache).toBeCalledWith([cacheFile], cacheKey, [cacheKey]);
 
         expect(exec).toHaveBeenCalledWith("conan", [
             "cache",
