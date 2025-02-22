@@ -38,11 +38,8 @@ jobs:
   action-tests:
     strategy:
       matrix:
-        include:
-          - name: Save cache with defaults
-            cache-key: ''
-          - name: Save cache with specified key
-            cache-key: 'linux-key'
+        cache-key: ['', 'linux-key']
+        force-save: [false, true]
 
     runs-on: ubuntu-latest
 
@@ -63,6 +60,7 @@ jobs:
         uses: ./
         with:
           cache-key: ${{ matrix.cache-key }}
+          force-save: ${{ matrix.force-save }}
 
       - name: Install packages
         run: |
