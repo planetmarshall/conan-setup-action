@@ -78,11 +78,11 @@ export async function restore_cache(key: string): Promise<boolean> {
     if (cacheHitKey == null) {
         core.info(`No cache hit found for ${key}`);
         return false;
-    } else if (cacheHitKey === key) {
-        core.info(`Cache hit on primary key: ${key}`);
+    } else {
+        core.info(`Cache hit on key: ${cacheHitKey}`);
         core.debug(`Restoring cache file to ${cacheFile}`);
         await exec("conan", ["cache", "restore", cacheFile]);
-        return true;
+        return key === cacheHitKey;
     }
 
     return false;
