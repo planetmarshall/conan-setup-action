@@ -120,6 +120,24 @@ describe("conan module", () => {
         ]);
     });
 
+    test("cache is restored on partial cache hit", async () => {
+        process.env.RUNNER_TEMP = "/faketmp";
+        const cacheKey = "12345-key";
+        const cacheFile = "/faketmp/conan-cache.tgz";
+        jest.mocked(restoreCache).mockReturnValueOnce(
+            Promise.resolve("12345-key-1"),
+        );
+
+        await conan.restore_cache(cacheKey);
+        expect(restoreCache).toBeCalledWith([cacheFile], cacheKey, [cacheKey]);
+
+        expect(exec).toHaveBeenCalledWith("conan", [
+            "cache",
+            "restore",
+            cacheFile,
+        ]);
+    });
+
     test("return true if there is a cache hit on the primary key", async () => {
         process.env.RUNNER_TEMP = "/faketmp";
         const cacheKey = "12345-key";
