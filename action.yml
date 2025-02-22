@@ -1,7 +1,10 @@
 name: Conan Setup
 description: Sets up the Conan Package Manager
 author: Andrew Marshall
-
+inputs:
+  cache-key:
+    description: 'explicitly specify the cache key to use'
+    required: false
 runs:
   using: node20
   main: dist/main/index.js

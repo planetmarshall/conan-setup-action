@@ -2,6 +2,7 @@ import { getExecOutput, exec } from "@actions/exec";
 import * as core from "@actions/core";
 import * as cache from "@actions/cache";
 import * as utils from "./utils";
+import { Constants } from "./constants";
 
 class Version {
     major: number;
@@ -53,12 +54,16 @@ export async function installed_profiles(): Promise<string[]> {
 
 export async function cache_key(): Promise<string> {
     const v = await version();
-    const result = await getExecOutput(
-        "conan",
-        ["profile", "show", "--format", "json"],
-        { silent: true },
-    );
-    return `conan-${v}-${utils.profile_hash_from_json(result.stdout)}`;
+    let key = core.getInput(Constants.CacheKeyInput);
+    if (key.length == 0) {
+        const result = await getExecOutput(
+            "conan",
+            ["profile", "show", "--format", "json"],
+            { silent: true },
+        );
+        key = utils.profile_hash_from_json(result.stdout);
+    }
+    return `conan-v${v}-${key}`;
 }
 
 export async function restore_cache(key: string): Promise<boolean> {
