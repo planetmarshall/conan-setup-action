@@ -40,7 +40,11 @@ describe("conan module", () => {
 
     test("install config", async () => {
         await conan.install_config("some_config");
-        expect(exec).toBeCalledWith("conan", ["config", "install", "some_config"]);
+        expect(exec).toBeCalledWith("conan", [
+            "config",
+            "install",
+            "some_config",
+        ]);
     });
 
     test("detect default profile", async () => {
