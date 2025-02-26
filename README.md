@@ -21,6 +21,35 @@ in your workflow
     uses: conan-setup-action@main
 ```
 
+## Examples
+
+### Installing a configuration
+
+```yaml
+  - name: Setup conan
+    uses: conan-setup-action@main
+    with:
+      config: https://github 
+```
+
+### Using an explicit cache key
+
+The default behaviour is to use a hash of the output of
+`conan profile show default` as a cache key.
+
+Cache keys are always of the form: `conan-v{version}-{cache-key}` or
+`conan-v{version}-{cache-key}-{timestamp}` so for 
+example the following configuration using Conan version 2.12.2 would
+upload a cache called `conan-v2.12.0-my_key`
+
+```yaml
+  - name: Setup conan
+    uses: conan-setup-action@main
+    with:
+      cache-key: my_key
+      append-timestamp: false
+```
+
 Development
 -----------
 

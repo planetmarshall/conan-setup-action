@@ -2,12 +2,16 @@ name: Conan Setup
 description: Sets up the Conan Package Manager
 author: Andrew Marshall
 inputs:
+  config:
+    description: 'install a configuration from a file or url'
+    required: false
   cache-key:
-    description: 'explicitly specify the cache key to use'
+    description: 'explicitly specify a cache key to use'
     required: false
-  force-save:
-    description: 'forces saving of the cache even if there was a cache hit by appending a timestamp'
+  append-timestamp:
+    description: 'append a timestamp to the cache key to always force an update'
     required: false
+    default: 'true'
 runs:
   using: node20
   main: dist/main/index.js

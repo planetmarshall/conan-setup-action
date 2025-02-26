@@ -1,5 +1,6 @@
 export enum Constants {
     PrimaryCacheHit = "PrimaryCacheHit",
     CacheKeyInput = "cache-key",
-    ForceSaveInput = "force-save",
+    AppendTimestampInput = "append-timestamp",
+    ConfgPathInput = "config",
 }

@@ -39,6 +39,10 @@ export async function version(): Promise<Version | null> {
     );
 }
 
+export async function install_config(configPath: string): Promise<void> {
+    await exec("conan", ["config", "install", configPath]);
+}
+
 export async function detect_default_profile(): Promise<void> {
     await exec("conan", ["profile", "detect"]);
 }
@@ -84,8 +88,6 @@ export async function restore_cache(key: string): Promise<boolean> {
         await exec("conan", ["cache", "restore", cacheFile]);
         return key === cacheHitKey;
     }
-
-    return false;
 }
 
 export async function save_cache(key: string): Promise<void> {

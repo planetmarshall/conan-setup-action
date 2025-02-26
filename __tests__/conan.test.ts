@@ -38,6 +38,15 @@ describe("conan module", () => {
         expect(version).toEqual({ major: 2, minor: 8, patch: 0 });
     });
 
+    test("install config", async () => {
+        await conan.install_config("some_config");
+        expect(exec).toBeCalledWith("conan", [
+            "config",
+            "install",
+            "some_config",
+        ]);
+    });
+
     test("detect default profile", async () => {
         await conan.detect_default_profile();
         expect(exec).toBeCalledWith("conan", ["profile", "detect"]);

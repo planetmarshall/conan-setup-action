@@ -11,14 +11,25 @@ async function run(): Promise<void> {
         const version = await conan.version();
         if (version != null) {
             core.info(`conan ${version.toString()} is installed.`);
+            core.startGroup("Configure");
+
+            const configPath = core.getInput(Constants.ConfgPathInput);
+            if (configPath.length > 0) {
+                core.debug(`installing configuration from ${configPath}`);
+                await conan.install_config(configPath);
+            }
+
             const profiles = await conan.installed_profiles();
             if (!profiles.includes("default")) {
                 await conan.detect_default_profile();
             }
+            core.endGroup();
+
             core.startGroup("Restoring Cache");
             const key = await conan.cache_key();
             const primaryCacheHit = await conan.restore_cache(key);
             core.saveState(Constants.PrimaryCacheHit, primaryCacheHit);
+            core.endGroup();
         } else {
             core.setFailed("conan is not installed.");
         }
