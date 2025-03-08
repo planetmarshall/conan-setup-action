@@ -36,7 +36,7 @@ jobs:
         run: npm run ci-test
 
   action-tests:
-    name: "test action( config=${{ matrix.config }}, cache-key=${{ matrix.cache-key }}, append-timestamp=${{ matrix.append-timestamp }}"
+    name: 'test action( config=${{ matrix.config }}, cache-key=${{ matrix.cache-key }}, append-timestamp=${{ matrix.append-timestamp }}'
     strategy:
       matrix:
         config: ['', '.github/workflows/config']

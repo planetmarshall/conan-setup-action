@@ -33,7 +33,6 @@ async function run(): Promise<void> {
         const primaryCacheHit = await conan.restore_cache(key);
         core.saveState(Constants.PrimaryCacheHit, primaryCacheHit);
         core.endGroup();
-
     } catch (error) {
         // Fail the workflow run if an error occurs
         if (error instanceof Error) core.setFailed(error.message);
