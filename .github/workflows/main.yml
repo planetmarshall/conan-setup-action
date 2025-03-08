@@ -36,11 +36,12 @@ jobs:
         run: npm run ci-test
 
   action-tests:
+    name: "test action( config=${{ matrix.config }}, cache-key=${{ matrix.cache-key }}, append-timestamp=${{ matrix.append-timestamp }}"
     strategy:
       matrix:
-        config: ['', '.gihub/workflows/config']
+        config: ['', '.github/workflows/config']
         cache-key: ['', 'linux-key']
-        force-save: [false, true]
+        append-timestamp: [false, true]
 
     runs-on: ubuntu-latest
 
@@ -61,7 +62,7 @@ jobs:
         uses: ./
         with:
           cache-key: ${{ matrix.cache-key }}
-          force-save: ${{ matrix.force-save }}
+          append-timestamp: ${{ matrix.append-timestamp }}
           config: ${{ matrix.config }}
 
       - name: Install packages
