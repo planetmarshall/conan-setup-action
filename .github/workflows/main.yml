@@ -42,6 +42,9 @@ jobs:
         config: ['', '.github/workflows/config']
         cache-key: ['', 'linux-key']
         append-timestamp: [false, true]
+        include:
+          - config: '.github/workflows/config'
+            test: test.py
 
     runs-on: ubuntu-latest
 
@@ -51,14 +54,17 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
           cache: 'pip'
           cache-dependency-path: '.github/requirements.txt'
 
       - name: Install conan
-        run: pip install conan
+        run: |
+          pip install \
+            conan \
+            pytest
 
-      - name: Test local action
+      - name: Run local action
         uses: ./
         with:
           cache-key: ${{ matrix.cache-key }}
@@ -68,3 +74,8 @@ jobs:
       - name: Install packages
         run: |
           conan install .github --build missing
+
+      - name: Run tests
+        if: matrix.test != ''
+        run: |
+          pytest tests
