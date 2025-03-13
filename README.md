@@ -1,5 +1,6 @@
 Conan Setup Action
 ==================
+![build](https://github.com/planetmarshall/conan-setup-action/actions/workflows/main.yml/badge.svg)
 
 A Github action for setting up the [conan](https://conan.io/) C and C++ Package Manager and using
 the [Github Actions Cache](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows)
