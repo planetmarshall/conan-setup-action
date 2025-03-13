@@ -35,6 +35,14 @@ jobs:
       - name: Test
         run: npm run ci-test
 
+      - name: Check package is up to date
+        run: |
+          npm run bundle
+          OUTPUT=$(git diff -- dist | wc --chars)
+          if [[ "${OUTPUT}" -neq 0 ]]; then
+            echo "::error package files are not up to date"
+          fi
+
   action-tests:
     strategy:
       matrix:
