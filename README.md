@@ -81,6 +81,7 @@ Supply remote credentials using environment variables. See
        remotes: |
           remote_1
           remote_2
+```
 
 Configuration
 -------------
