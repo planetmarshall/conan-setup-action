@@ -43,6 +43,10 @@ export async function install_config(configPath: string): Promise<void> {
     await exec("conan", ["config", "install", configPath]);
 }
 
+export async function authorize_remote(pattern: string): Promise<void> {
+    await exec("conan", ["remote", "auth", pattern]);
+}
+
 export async function detect_default_profile(): Promise<void> {
     await exec("conan", ["profile", "detect"]);
 }
