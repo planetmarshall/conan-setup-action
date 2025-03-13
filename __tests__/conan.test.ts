@@ -53,13 +53,13 @@ describe("conan module", () => {
             "remote",
             "auth",
             "my_remote",
-            "--force"
+            "--force",
         ]);
         expect(exec).toBeCalledWith("conan", [
             "remote",
             "auth",
             "*",
-            "--force"
+            "--force",
         ]);
     });
 

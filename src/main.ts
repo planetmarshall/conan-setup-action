@@ -2,7 +2,6 @@ import * as core from "@actions/core";
 import { Constants } from "./constants";
 import * as conan from "./conan";
 
-
 async function configure_conan(): Promise<void> {
     const configPath = core.getInput(Constants.ConfigPathInput);
     if (configPath.length > 0) {
