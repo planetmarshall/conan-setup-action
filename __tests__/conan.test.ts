@@ -48,11 +48,16 @@ describe("conan module", () => {
     });
 
     test("auth remote", async () => {
-        await conan.authorize_remote("my_remote");
+        await conan.authorize_remotes(["my_remote", "*"]);
         expect(exec).toBeCalledWith("conan", [
             "remote",
             "auth",
             "my_remote",
+        ]);
+        expect(exec).toBeCalledWith("conan", [
+            "remote",
+            "auth",
+            "*",
         ]);
     });
 

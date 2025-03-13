@@ -2,6 +2,20 @@ import * as core from "@actions/core";
 import { Constants } from "./constants";
 import * as conan from "./conan";
 
+
+async function configure_conan(): Promise<void> {
+    const configPath = core.getInput(Constants.ConfigPathInput);
+    if (configPath.length > 0) {
+        core.debug(`installing configuration from ${configPath}`);
+        await conan.install_config(configPath);
+    }
+    const profiles = await conan.installed_profiles();
+    if (!profiles.includes("default")) {
+        await conan.detect_default_profile();
+    }
+    var remotes = core.getMultilineInput(Constants.RemotePatternsInput);
+}
+
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -14,18 +28,9 @@ async function run(): Promise<void> {
             return;
         }
         core.info(`conan ${version.toString()} is installed.`);
+
         core.startGroup("Configure");
-
-        const configPath = core.getInput(Constants.ConfigPathInput);
-        if (configPath.length > 0) {
-            core.debug(`installing configuration from ${configPath}`);
-            await conan.install_config(configPath);
-        }
-
-        const profiles = await conan.installed_profiles();
-        if (!profiles.includes("default")) {
-            await conan.detect_default_profile();
-        }
+        await configure_conan();
         core.endGroup();
 
         core.startGroup("Restoring Cache");
