@@ -1,7 +1,10 @@
 Conan Setup Action
 ==================
 
-A Github action for setting up the [conan](https://conan.io/) C and C++ Package Manager
+A Github action for setting up the [conan](https://conan.io/) C and C++ Package Manager and using
+the [Github Actions Cache](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows)
+and the conan cache [save / restore](https://docs.conan.io/2/devops/save_restore.html) feature to share the package cache
+between CI runs.
 
 Usage
 -----
@@ -83,6 +86,20 @@ Supply remote credentials using environment variables. See
           remote_2
 ```
 
+### Deactivating save
+
+By default the package cache is saved using the 
+[Github Actions Cache](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows)
+and `conan cache save`. To deactivate this behaviour, use the `save` option.
+
+
+```yaml
+  - name: Setup conan
+    uses: conan-setup-action@main
+    with:
+      save: ${{ github.ref_name == 'main' }}
+```
+
 Configuration
 -------------
 
@@ -92,6 +109,7 @@ Configuration
 | `append-timestamp` | append a timestamp to the cache key to force a save      | `true`                       |               
 | `config`           | install a configuration using `conan config install`     | `none`                       |               
 | `remotes`          | A list of remotes to authorize using `conan remote auth` | `none`                       |               
+| `save`             | Save the package cache                                   | `true`                       |               
 
 Development
 -----------

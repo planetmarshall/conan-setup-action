@@ -14,6 +14,8 @@ async function post(): Promise<void> {
         const primaryCacheHit = core.getState(Constants.PrimaryCacheHit);
         if (JSON.parse(primaryCacheHit) && !appendTimestamp) {
             core.info("Cache hit on primary key. Cache will not be saved");
+        } else if (!core.getBooleanInput(Constants.SaveCacheInput)) {
+            core.info("Cache saving deactivated");
         } else {
             core.startGroup("Saving cache");
             const key = await conan.cache_key(appendTimestamp);

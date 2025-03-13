@@ -1,6 +1,6 @@
 name: Conan Setup
 description: Sets up the Conan Package Manager
-author: Andrew Marshall
+author: 'Andrew Marshall <planetmarshalluk@gmail.com>'
 inputs:
   config:
     description: 'install a configuration from a file or url'
@@ -15,6 +15,10 @@ inputs:
   remotes:
     description: 'A list of remotes to authorize. Use environment variables to supply credentials'
     required: false
+  save:
+    description: 'Whether to save the package cache'
+    required: false
+    default: 'true'
 runs:
   using: node20
   main: dist/main/index.js

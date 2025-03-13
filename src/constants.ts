@@ -4,4 +4,5 @@ export enum Constants {
     AppendTimestampInput = "append-timestamp",
     ConfigPathInput = "config",
     RemotePatternsInput = "remotes",
+    SaveCacheInput = "save",
 }
