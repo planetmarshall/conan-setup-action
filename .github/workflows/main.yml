@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: Build and Test
 
 on:
   pull_request:
@@ -50,6 +50,7 @@ jobs:
         cache-key: ['', 'linux-key']
         append-timestamp: [false, true]
         remotes: ['']
+        save: [true, false]
         include:
           - config: '.github/workflows/config'
             test: test.py
@@ -79,6 +80,7 @@ jobs:
           append-timestamp: ${{ matrix.append-timestamp }}
           config: ${{ matrix.config }}
           remotes: ${{ matrix.remotes }}
+          save: ${{ matrix.save }}
 
       - name: Install packages
         run: |
