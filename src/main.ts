@@ -13,7 +13,10 @@ async function configure_conan(): Promise<void> {
     if (!profiles.includes("default")) {
         await conan.detect_default_profile();
     }
-    var remotes = core.getMultilineInput(Constants.RemotePatternsInput);
+    const remotes = core.getMultilineInput(Constants.RemotePatternsInput);
+    if (remotes.length > 0) {
+        await conan.authorize_remotes(remotes);
+    }
 }
 
 /**
