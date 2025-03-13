@@ -63,14 +63,34 @@ Use the `config` option to
       append-timestamp: false
 ```
 
+### Authorizing a remote
+
+Supply remote credentials using environment variables. See 
+[conan remote auth](https://docs.conan.io/2/reference/commands/remote.html#conan-remote-auth) for more details
+
+```yaml
+  - name: Setup conan
+    uses: conan-setup-action@main
+    env:
+       CONAN_LOGIN_USERNAME_REMOTE_1: user1
+       CONAN_PASSWORD_REMOTE_1: p455w0rd_1
+       CONAN_LOGIN_USERNAME_REMOTE_2: user2
+       CONAN_PASSWORD_REMOTE_2: p455w0rd_2
+    with:
+       config: conan_config
+       remotes: |
+          remote_1
+          remote_2
+
 Configuration
 -------------
 
-| option             | description                                          | default                      |
-|--------------------|------------------------------------------------------|------------------------------|
-| `cache-key`        | specify an explicit cache key to use                 | hash of `conan profile show` |
-| `append-timestamp` | append a timestamp to the cache key to force a save  | `true`                       |               
-| `config`           | install a configuration using `conan config install` | `none`                       |               
+| option             | description                                              | default                      |
+|--------------------|----------------------------------------------------------|------------------------------|
+| `cache-key`        | specify an explicit cache key to use                     | hash of `conan profile show` |
+| `append-timestamp` | append a timestamp to the cache key to force a save      | `true`                       |               
+| `config`           | install a configuration using `conan config install`     | `none`                       |               
+| `remotes`          | A list of remotes to authorize using `conan remote auth` | `none`                       |               
 
 Development
 -----------

@@ -12,6 +12,9 @@ inputs:
     description: 'append a timestamp to the cache key to always force an update'
     required: false
     default: 'true'
+  remotes:
+    description: 'A list of remotes to authorize. Use environment variables to supply credentials'
+    required: false
 runs:
   using: node20
   main: dist/main/index.js

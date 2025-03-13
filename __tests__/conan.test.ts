@@ -47,6 +47,22 @@ describe("conan module", () => {
         ]);
     });
 
+    test("auth remote", async () => {
+        await conan.authorize_remotes(["my_remote", "*"]);
+        expect(exec).toBeCalledWith("conan", [
+            "remote",
+            "auth",
+            "my_remote",
+            "--force",
+        ]);
+        expect(exec).toBeCalledWith("conan", [
+            "remote",
+            "auth",
+            "*",
+            "--force",
+        ]);
+    });
+
     test("detect default profile", async () => {
         await conan.detect_default_profile();
         expect(exec).toBeCalledWith("conan", ["profile", "detect"]);

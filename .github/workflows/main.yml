@@ -36,12 +36,12 @@ jobs:
         run: npm run ci-test
 
   action-tests:
-    name: 'test action( config=${{ matrix.config }}, cache-key=${{ matrix.cache-key }}, append-timestamp=${{ matrix.append-timestamp }}'
     strategy:
       matrix:
         config: ['', '.github/workflows/config']
         cache-key: ['', 'linux-key']
         append-timestamp: [false, true]
+        remotes: ['']
         include:
           - config: '.github/workflows/config'
             test: test.py
@@ -70,6 +70,7 @@ jobs:
           cache-key: ${{ matrix.cache-key }}
           append-timestamp: ${{ matrix.append-timestamp }}
           config: ${{ matrix.config }}
+          remotes: ${{ matrix.remotes }}
 
       - name: Install packages
         run: |
