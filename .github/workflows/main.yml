@@ -48,14 +48,30 @@ jobs:
     name: '${{ matrix.name }} (${{ matrix.runner }})'
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-latest, windows-latest]
         include:
           - name: default
+            runner: ubuntu-latest
             config: ''
-            cache-key: ''
-            append-timestamp: true
-            remotes: ''
-            save: true
+
+          - name: default
+            runner: macos-latest
+            config: ''
+
+          - name: default
+            runner: windows-latest
+            config: ''
+
+          - name: install config
+            runner: ubuntu-latest
+            config: '.github/workflows/config'
+
+          - name: install config
+            runner: macos-latest
+            config: '.github/workflows/config'
+
+          - name: install config
+            runner: windows-latest
+            config: '.github/workflows/config'
 
     runs-on: ${{ matrix.runner }}
 
@@ -83,10 +99,6 @@ jobs:
         uses: ./
         with:
           config: ${{ matrix.config }}
-          cache-key: ${{ matrix.cache-key }}
-          append-timestamp: ${{ matrix.append-timestamp }}
-          remotes: ${{ matrix.remotes }}
-          save: ${{ matrix.save }}
 
       - name: Install packages
         run: |
