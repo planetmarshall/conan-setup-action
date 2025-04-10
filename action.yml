@@ -11,14 +11,14 @@ inputs:
   append-timestamp:
     description: 'append a timestamp to the cache key to always force an update'
     required: false
-    default: 'true'
+    default: true
   remotes:
     description: 'A list of remotes to authorize. Use environment variables to supply credentials'
     required: false
   save:
     description: 'Whether to save the package cache'
     required: false
-    default: 'true'
+    default: true
 runs:
   using: node20
   main: dist/main/index.js
