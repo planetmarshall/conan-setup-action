@@ -52,26 +52,39 @@ jobs:
           - name: default
             runner: ubuntu-latest
             config: ''
+            append-timestamp: true
 
           - name: default
             runner: macos-latest
             config: ''
+            append-timestamp: true
 
           - name: default
             runner: windows-latest
             config: ''
+            append-timestamp: true
 
           - name: install config
             runner: ubuntu-latest
             config: '.github/workflows/config'
+            append-timestamp: true
+            test: true
 
           - name: install config
             runner: macos-latest
             config: '.github/workflows/config'
+            append-timestamp: true
+            test: true
 
           - name: install config
             runner: windows-latest
             config: '.github/workflows/config'
+            append-timestamp: true
+            test: true
+
+          - name: cache key without timestamp
+            runner: ubuntu-latest
+            append-timestamp: false
 
     runs-on: ${{ matrix.runner }}
 
@@ -99,6 +112,12 @@ jobs:
         uses: ./
         with:
           config: ${{ matrix.config }}
+          append-timestamp: ${{ matrix.append-timestamp }}
+
+      - name: Run tests
+        if: matrix.test != ''
+        run: |
+          pytest tests
 
       - name: Install packages
         run: |
