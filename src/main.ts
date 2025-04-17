@@ -1,9 +1,9 @@
 import * as core from "@actions/core";
-import { Constants } from "./constants";
+import { Input, State } from "./constants";
 import * as conan from "./conan";
 
 async function configure_conan(): Promise<void> {
-    const configPath = core.getInput(Constants.ConfigPathInput);
+    const configPath = core.getInput(Input.ConfigPath);
     if (configPath.length > 0) {
         core.debug(`installing configuration from ${configPath}`);
         await conan.install_config(configPath);
@@ -12,7 +12,7 @@ async function configure_conan(): Promise<void> {
     if (!profiles.includes("default")) {
         await conan.detect_default_profile();
     }
-    const remotes = core.getMultilineInput(Constants.RemotePatternsInput);
+    const remotes = core.getMultilineInput(Input.RemotePatterns);
     if (remotes.length > 0) {
         await conan.authorize_remotes(remotes);
     }
@@ -36,9 +36,9 @@ async function run(): Promise<void> {
         core.endGroup();
 
         core.startGroup("Restoring Cache");
-        const key = await conan.cache_key();
+        const key = await conan.cache_key(false, core.getInput(Input.Lockfile));
         const primaryCacheHit = await conan.restore_cache(key);
-        core.saveState(Constants.PrimaryCacheHit, primaryCacheHit);
+        core.saveState(State.PrimaryCacheHit, primaryCacheHit);
         core.endGroup();
     } catch (error) {
         // Fail the workflow run if an error occurs

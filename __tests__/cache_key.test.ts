@@ -23,8 +23,18 @@ jest.useFakeTimers().setSystemTime(new Date("2025-01-01"));
 
 import { getExecOutput } from "@actions/exec";
 import { getInput } from "@actions/core";
+import { Version } from "../src/conan";
+import fs from "node:fs/promises";
 
 describe("compute cache key", () => {
+    test("cache key from components", () => {
+        const key = conan.cache_key_from_components(
+            new Version(1, 2, 3),
+            "my_key",
+        );
+        expect(key).toBe("conan-v1.2.3-my_key");
+    });
+
     test("get default cache key", async () => {
         jest.mocked(getExecOutput).mockReturnValue(
             Promise.resolve({
@@ -36,6 +46,27 @@ describe("compute cache key", () => {
         jest.mocked(getInput).mockReturnValue("");
 
         const key = await conan.cache_key();
+        expect(key).toMatch(/^conan-.+$/);
+    });
+
+    test("get default cache key if lockfile is present", async () => {
+        const folder = await fs.mkdtemp("test_tmp_");
+        const lockfile_path = `${folder}/conan.lock`;
+        await fs.writeFile(
+            `${folder}/conan.lock`,
+            JSON.stringify({ foo: "bar" }),
+        );
+
+        jest.mocked(getExecOutput).mockReturnValue(
+            Promise.resolve({
+                stdout: "{}",
+                exitCode: 0,
+                stderr: "",
+            }),
+        );
+        jest.mocked(getInput).mockReturnValue("");
+
+        const key = await conan.cache_key(false, lockfile_path);
         expect(key).toMatch(/^conan-.+$/);
     });
 

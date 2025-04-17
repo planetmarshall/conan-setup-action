@@ -52,39 +52,51 @@ jobs:
           - name: default
             runner: ubuntu-latest
             config: ''
-            append-timestamp: true
+            append-timestamp: false
+            lockfile: ''
 
           - name: default
             runner: macos-latest
             config: ''
             append-timestamp: false
+            lockfile: ''
 
           - name: default
             runner: windows-latest
             config: ''
             append-timestamp: false
+            lockfile: ''
 
           - name: install config
             runner: ubuntu-latest
             config: '.github/workflows/config'
             append-timestamp: false
+            lockfile: ''
             test: true
 
           - name: install config
             runner: macos-latest
             config: '.github/workflows/config'
             append-timestamp: false
+            lockfile: ''
             test: true
 
           - name: install config
             runner: windows-latest
             config: '.github/workflows/config'
             append-timestamp: false
+            lockfile: ''
             test: true
 
           - name: cache key with timestamp
             runner: ubuntu-latest
             append-timestamp: false
+            lockfile: ''
+
+          - name: cache key with lockfile
+            runner: ubuntu-latest
+            append-timestamp: false
+            lockfile: .github/workflows/conan.lock
 
     runs-on: ${{ matrix.runner }}
 
@@ -113,6 +125,7 @@ jobs:
         with:
           config: ${{ matrix.config }}
           append-timestamp: ${{ matrix.append-timestamp }}
+          lockfile: ${{ matrix.lockfile }}
 
       - name: Run tests
         if: matrix.test != ''

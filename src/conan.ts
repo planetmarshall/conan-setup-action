@@ -2,9 +2,10 @@ import { getExecOutput, exec } from "@actions/exec";
 import * as core from "@actions/core";
 import * as cache from "@actions/cache";
 import * as utils from "./utils";
-import { Constants } from "./constants";
+import * as fs from "node:fs/promises";
+import { Input } from "./constants";
 
-class Version {
+export class Version {
     major: number;
     minor: number;
     patch: number;
@@ -62,23 +63,53 @@ export async function installed_profiles(): Promise<string[]> {
     return JSON.parse(output.stdout);
 }
 
+async function profile_hash(): Promise<string> {
+    const result = await getExecOutput(
+        "conan",
+        ["profile", "show", "--format", "json"],
+        { silent: true },
+    );
+    return utils.json_hash(result.stdout);
+}
+
+async function lockfile_hash(lockfile_path: string): Promise<string | null> {
+    try {
+        const lockfile = await fs.readFile(lockfile_path);
+        return utils.json_hash(lockfile.toString());
+    } catch {
+        return null;
+    }
+}
+
 export async function cache_key(
     useTimestamp: boolean = false,
+    lockfile_path: string | null = null,
 ): Promise<string> {
     const v = await version();
-    let key = core.getInput(Constants.CacheKeyInput);
+    let key = core.getInput(Input.CacheKey);
     if (key.length == 0) {
-        const result = await getExecOutput(
-            "conan",
-            ["profile", "show", "--format", "json"],
-            { silent: true },
-        );
-        key = utils.profile_hash_from_json(result.stdout);
+        const profile_key = await profile_hash();
+        let lockfile_key = null;
+        if (lockfile_path !== null && lockfile_path.length > 0) {
+            lockfile_key = await lockfile_hash(lockfile_path);
+        }
+        if (lockfile_key == null) {
+            key = profile_key;
+        } else {
+            key = `${profile_key}-${lockfile_key}`;
+        }
     }
     if (useTimestamp) {
-        return `conan-v${v}-${key}-${Date.now()}`;
+        return cache_key_from_components(v as Version, `${key}-${Date.now()}`);
     }
-    return `conan-v${v}-${key}`;
+    return cache_key_from_components(v as Version, key);
+}
+
+export function cache_key_from_components(
+    version: Version,
+    key_suffix: string,
+): string {
+    return `conan-v${version}-${key_suffix}`;
 }
 
 export async function restore_cache(key: string): Promise<boolean> {

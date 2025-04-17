@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { Constants } from "./constants";
+import { Input, State } from "./constants";
 import * as conan from "./conan";
 
 /**
@@ -8,17 +8,18 @@ import * as conan from "./conan";
  */
 async function post(): Promise<void> {
     try {
-        const appendTimestamp = core.getBooleanInput(
-            Constants.AppendTimestampInput,
-        );
-        const primaryCacheHit = core.getState(Constants.PrimaryCacheHit);
+        const appendTimestamp = core.getBooleanInput(Input.AppendTimestamp);
+        const primaryCacheHit = core.getState(State.PrimaryCacheHit);
         if (JSON.parse(primaryCacheHit) && !appendTimestamp) {
             core.info("Cache hit on primary key. Cache will not be saved");
-        } else if (!core.getBooleanInput(Constants.SaveCacheInput)) {
+        } else if (!core.getBooleanInput(Input.SaveCache)) {
             core.info("Cache saving deactivated");
         } else {
             core.startGroup("Saving cache");
-            const key = await conan.cache_key(appendTimestamp);
+            const key = await conan.cache_key(
+                appendTimestamp,
+                core.getInput(Input.Lockfile),
+            );
             core.debug(`Saving cache with key: ${key}`);
             await conan.save_cache(key);
             core.endGroup();

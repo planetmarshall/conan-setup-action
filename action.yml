@@ -8,6 +8,10 @@ inputs:
   cache-key:
     description: 'Explicitly specify a cache key to use'
     required: false
+  lockfile:
+    description: 'Path to a conan lockfile to use as part of the cache key, if one exists'
+    required: false
+    default: conan.lock
   append-timestamp:
     description: 'Append a timestamp to the cache key to force an overwrite of the cache'
     required: false
