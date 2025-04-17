@@ -3,15 +3,15 @@ description: Sets up the Conan Package Manager
 author: 'Andrew Marshall <planetmarshalluk@gmail.com>'
 inputs:
   config:
-    description: 'install a configuration from a file or url'
+    description: 'Install a configuration from a file or url'
     required: false
   cache-key:
-    description: 'explicitly specify a cache key to use'
+    description: 'Explicitly specify a cache key to use'
     required: false
   append-timestamp:
-    description: 'append a timestamp to the cache key to always force an update'
+    description: 'Append a timestamp to the cache key to force an overwrite of the cache'
     required: false
-    default: true
+    default: false
   remotes:
     description: 'A list of remotes to authorize. Use environment variables to supply credentials'
     required: false

@@ -30,16 +30,10 @@ in your workflow
 By default, the full cache key is of the form
 
 ```
-conan-v{ conan version }-{ cache-key }-{ timestamp }
+conan-v{ conan version }-{ cache-key }
 ```
 
-Where `cache-key` is the MD5 hash of the deterministic JSON representation of `conan profile show`
-
-Appending a timestamp is inspired by the behaviour of the
-[ccache action](https://github.com/hendrikmuhs/ccache-action) by [@hendrikmuhs](https://github.com/hendrikmuhs), 
-which causes a cache to always be uploaded even if there was a cache hit. A partial key without the timestamp is 
-used to always retrieve the latest cache.
-
+Where `cache-key` is the MD5 hash of the deterministic JSON representation of `conan profile show`. 
 This behaviour can be customized using the configuration options
 
 ## Examples
@@ -57,14 +51,28 @@ Use the `config` option to
       config: https://github.com/planetmarshall/conan_config
 ```
 
-### Using an explicit cache key
+### Customizing the cache key
 
 ```yaml
   - name: Setup conan
     uses: conan-setup-action@main
     with:
       cache-key: my_key
-      append-timestamp: false
+```
+
+### Forcing a cache save
+
+In common with most github actions, caches are not saved if there is a hit on the primary key.
+A save can be forced by appending a timestamp to the key. this is inspired by the behaviour of the
+[ccache action](https://github.com/hendrikmuhs/ccache-action) by [@hendrikmuhs](https://github.com/hendrikmuhs), however this is **not the default behaviour**.
+
+A partial key without the timestamp is used to always retrieve the latest cache.
+
+```yaml
+  - name: Setup conan
+    uses: conan-setup-action@main
+    with:
+       append-timestamp: true
 ```
 
 ### Authorizing a remote
@@ -93,7 +101,6 @@ By default the package cache is saved using the
 [Github Actions Cache](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows)
 and `conan cache save`. To deactivate this behaviour, use the `save` option.
 
-
 ```yaml
   - name: Setup conan
     uses: conan-setup-action@main
@@ -104,13 +111,13 @@ and `conan cache save`. To deactivate this behaviour, use the `save` option.
 Configuration
 -------------
 
-| option             | description                                              | default                      |
-|--------------------|----------------------------------------------------------|------------------------------|
-| `cache-key`        | specify an explicit cache key to use                     | hash of `conan profile show` |
-| `append-timestamp` | append a timestamp to the cache key to force a save      | `true`                       |               
-| `config`           | install a configuration using `conan config install`     | `none`                       |               
-| `remotes`          | A list of remotes to authorize using `conan remote auth` | `none`                       |               
-| `save`             | Save the package cache                                   | `true`                       |               
+| option             | description                                                             | default                      |
+|--------------------|-------------------------------------------------------------------------|------------------------------|
+| `cache-key`        | Specify an explicit cache key to use                                    | hash of `conan profile show` |
+| `append-timestamp` | Append a timestamp to the cache key to force overwriting the cache key. | `false`                      |               
+| `config`           | Install a configuration using `conan config install`                    | `none`                       |               
+| `remotes`          | A list of remotes to authorize using `conan remote auth`                | `none`                       |               
+| `save`             | Save the package cache                                                  | `true`                       |               
 
 Development
 -----------
