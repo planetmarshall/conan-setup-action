@@ -117,7 +117,7 @@ jobs:
       - name: Run tests
         if: matrix.test != ''
         run: |
-          pytest tests
+          pytest integration_tests
 
       - name: Install packages
         run: |
