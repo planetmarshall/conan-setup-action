@@ -1,0 +1,10 @@
+{
+    "version": "0.5",
+    "requires": [
+        "zlib/1.3.1#b8bc2603263cf7eccbd6e17e66b0ed76%1740145990.227",
+        "gtest/1.15.0#9eba70e54373fb7325151ad3375934a1%1743410805.366"
+    ],
+    "build_requires": [],
+    "python_requires": [],
+    "config_requires": []
+}
