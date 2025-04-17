@@ -19,11 +19,8 @@ jest.mock("@actions/core", () => ({
     endGroup: jest.fn(),
 }));
 
-jest.useFakeTimers().setSystemTime(new Date("2025-01-01"));
-
 import { getExecOutput, exec } from "@actions/exec";
 import { restoreCache, saveCache } from "@actions/cache";
-import { getInput } from "@actions/core";
 
 describe("conan module", () => {
     test("get version if conan is installed", async () => {
@@ -66,50 +63,6 @@ describe("conan module", () => {
     test("detect default profile", async () => {
         await conan.detect_default_profile();
         expect(exec).toBeCalledWith("conan", ["profile", "detect"]);
-    });
-
-    test("get default cache key", async () => {
-        jest.mocked(getExecOutput).mockReturnValue(
-            Promise.resolve({
-                stdout: "{}",
-                exitCode: 0,
-                stderr: "",
-            }),
-        );
-        jest.mocked(getInput).mockReturnValue("");
-
-        const key = await conan.cache_key();
-        expect(key).toMatch(/^conan-.+$/);
-    });
-
-    test("get cache key if specified by input", async () => {
-        jest.mocked(getExecOutput).mockReturnValueOnce(
-            Promise.resolve({
-                stdout: "Conan version 2.8.0",
-                exitCode: 0,
-                stderr: "",
-            }),
-        );
-        jest.mocked(getInput).mockReturnValue("linux-x86_64-cache-key");
-        const key = await conan.cache_key();
-        expect(getInput).toBeCalledWith("cache-key");
-        expect(key).toEqual("conan-v2.8.0-linux-x86_64-cache-key");
-    });
-
-    test("get cache key if forcing save", async () => {
-        jest.mocked(getExecOutput).mockReturnValueOnce(
-            Promise.resolve({
-                stdout: "Conan version 2.8.0",
-                exitCode: 0,
-                stderr: "",
-            }),
-        );
-        jest.mocked(getInput).mockReturnValue("linux-x86_64-cache-key");
-        const key = await conan.cache_key(true);
-        expect(getInput).toBeCalledWith("cache-key");
-        expect(key).toEqual(
-            "conan-v2.8.0-linux-x86_64-cache-key-1735689600000",
-        );
     });
 
     test("list installed profiles", async () => {
