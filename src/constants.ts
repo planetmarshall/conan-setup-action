@@ -8,5 +8,6 @@ export enum Input {
 }
 
 export enum State {
-    PrimaryCacheHit = "PrimaryCacheHit",
+    PrimaryCacheHit = "primary_cache_hit",
+    CacheKey = "cache_key",
 }

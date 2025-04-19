@@ -36,9 +36,25 @@ async function run(): Promise<void> {
         core.endGroup();
 
         core.startGroup("Restoring Cache");
-        const key = await conan.cache_key(false, core.getInput(Input.Lockfile));
+        const lockfile_path = await conan.lockfile_path_or_null(
+            core.getInput(Input.Lockfile),
+        );
+        const lockfile_hash =
+            lockfile_path != null
+                ? await conan.lockfile_hash(lockfile_path)
+                : null;
+
+        if (lockfile_hash != null) {
+            core.info(
+                `lockfile found at '${lockfile_path}' - appending hash to key`,
+            );
+        }
+
+        const key = await conan.cache_key(lockfile_hash);
         const primaryCacheHit = await conan.restore_cache(key);
+
         core.saveState(State.PrimaryCacheHit, primaryCacheHit);
+        core.saveState(State.CacheKey, key);
         core.endGroup();
     } catch (error) {
         // Fail the workflow run if an error occurs

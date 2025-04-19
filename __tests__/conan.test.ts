@@ -6,6 +6,14 @@ jest.mock("@actions/exec", () => ({
     exec: jest.fn(),
 }));
 
+jest.mock("node:fs/promises", () => ({
+    constants: {
+        R_OK: 1,
+    },
+    access: jest.fn(),
+    readFile: jest.fn(),
+}));
+
 jest.mock("@actions/cache", () => ({
     restoreCache: jest.fn(),
     saveCache: jest.fn(),
@@ -21,6 +29,7 @@ jest.mock("@actions/core", () => ({
 
 import { getExecOutput, exec } from "@actions/exec";
 import { restoreCache, saveCache } from "@actions/cache";
+import * as fs from "node:fs/promises";
 
 describe("conan module", () => {
     test("get version if conan is installed", async () => {
@@ -33,6 +42,28 @@ describe("conan module", () => {
         );
         const version = await conan.version();
         expect(version).toEqual({ major: 2, minor: 8, patch: 0 });
+    });
+
+    test("get default lockfile if setting is empty and lockfile exists", async () => {
+        jest.mocked(fs.access).mockReturnValueOnce(Promise.resolve());
+        const lockfile_path = await conan.lockfile_path_or_null("");
+
+        expect(fs.access).toBeCalledWith("conan.lock", fs.constants.R_OK);
+        expect(lockfile_path).toEqual("conan.lock");
+    });
+
+    test("return null if setting is empty and lockfile does not exist", async () => {
+        jest.mocked(fs.access).mockReturnValueOnce(Promise.reject());
+        const lockfile_path = await conan.lockfile_path_or_null("");
+
+        expect(fs.access).toBeCalledWith("conan.lock", fs.constants.R_OK);
+        expect(lockfile_path).toBeNull();
+    });
+
+    test("get specified lockfile", async () => {
+        const lockfile_path =
+            await conan.lockfile_path_or_null("foo/conan.lock");
+        expect(lockfile_path).toEqual("foo/conan.lock");
     });
 
     test("install config", async () => {

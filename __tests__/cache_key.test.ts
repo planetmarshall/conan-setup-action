@@ -66,7 +66,7 @@ describe("compute cache key", () => {
         );
         jest.mocked(getInput).mockReturnValue("");
 
-        const key = await conan.cache_key(false, lockfile_path);
+        const key = await conan.cache_key(lockfile_path);
         expect(key).toMatch(/^conan-.+$/);
     });
 
@@ -82,21 +82,5 @@ describe("compute cache key", () => {
         const key = await conan.cache_key();
         expect(getInput).toBeCalledWith("cache-key");
         expect(key).toEqual("conan-v2.8.0-linux-x86_64-cache-key");
-    });
-
-    test("get cache key if forcing save", async () => {
-        jest.mocked(getExecOutput).mockReturnValueOnce(
-            Promise.resolve({
-                stdout: "Conan version 2.8.0",
-                exitCode: 0,
-                stderr: "",
-            }),
-        );
-        jest.mocked(getInput).mockReturnValue("linux-x86_64-cache-key");
-        const key = await conan.cache_key(true);
-        expect(getInput).toBeCalledWith("cache-key");
-        expect(key).toEqual(
-            "conan-v2.8.0-linux-x86_64-cache-key-1735689600000",
-        );
     });
 });
