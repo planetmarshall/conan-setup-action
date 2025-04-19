@@ -90,13 +90,13 @@ jobs:
 
           - name: cache key with timestamp
             runner: ubuntu-latest
-            append-timestamp: false
+            append-timestamp: true
             lockfile: ''
 
           - name: cache key with lockfile
             runner: ubuntu-latest
             append-timestamp: false
-            lockfile: .github/workflows/conan.lock
+            lockfile: .github/conan.lock
 
     runs-on: ${{ matrix.runner }}
 
@@ -135,3 +135,41 @@ jobs:
       - name: Install packages
         run: |
           conan install .github --build missing
+
+  action-tests-error:
+    name: 'Nonexistent lockfile is an error'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+          cache-dependency-path: '.github/requirements.txt'
+
+      - name: Install conan
+        run: |
+          pip install \
+            conan \
+            pytest
+
+      - name: Run local action
+        id: action_run
+        continue-on-error: true
+        uses: ./
+        with:
+          lockfile: conan.lock
+
+      - name: Verify failure
+        run: |
+          if [[ "${{ steps.action_run.outcome }}" != "failure" ]]; then
+            echo "::error action was expected to fail"
+            exit 1
+          fi

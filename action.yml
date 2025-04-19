@@ -9,9 +9,12 @@ inputs:
     description: 'Explicitly specify a cache key to use'
     required: false
   lockfile:
-    description: 'Path to a conan lockfile to use as part of the cache key, if one exists'
+    description: |
+      Path to a conan lockfile to use as part of the cache key. The default is the empty string which will use
+      'conan.lock' if it exists in the workspace root, otherwise no lockfile will be hashed. It is an error to specify
+      a lockfile which does not exist.
     required: false
-    default: conan.lock
+    default: ''
   append-timestamp:
     description: 'Append a timestamp to the cache key to force an overwrite of the cache'
     required: false

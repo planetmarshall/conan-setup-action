@@ -16,10 +16,10 @@ async function post(): Promise<void> {
             core.info("Cache saving deactivated");
         } else {
             core.startGroup("Saving cache");
-            const key = await conan.cache_key(
-                appendTimestamp,
-                core.getInput(Input.Lockfile),
-            );
+            let key = core.getState(State.CacheKey);
+            if (appendTimestamp) {
+                key = `${key}-${Date.now()}`;
+            }
             core.debug(`Saving cache with key: ${key}`);
             await conan.save_cache(key);
             core.endGroup();

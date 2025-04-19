@@ -10,7 +10,7 @@ between CI runs.
 Usage
 -----
 
-Currently requires conan to be installed as a prerequisite. For example, use the following
+Requires conan to be installed as a prerequisite. For example, use the following
 in your workflow
 
 ```yaml
@@ -30,10 +30,15 @@ in your workflow
 By default, the full cache key is of the form
 
 ```
-conan-v{ conan version }-{ cache-key }
+conan-v{ conan version }-{ profile-hash }
+```
+or, if a default lockfile `conan.lock` exists in the workspace root, 
+```
+conan-v{ conan version }-{ profile-hash }-{ lockfile-hash }
 ```
 
-Where `cache-key` is the MD5 hash of the deterministic JSON representation of `conan profile show`. 
+Where `profile-hash` is the MD5 hash of the deterministic JSON representation of `conan profile show`.
+
 This behaviour can be customized using the configuration options
 
 ## Examples
@@ -59,6 +64,9 @@ Use the `config` option to
     with:
       cache-key: my_key
 ```
+
+The cache key will still have the prefix `conan-v{conan_version}-`, but the suffix will be as specified by
+`cache-key`.
 
 ### Forcing a cache save
 

@@ -72,35 +72,43 @@ async function profile_hash(): Promise<string> {
     return utils.json_hash(result.stdout);
 }
 
-async function lockfile_hash(lockfile_path: string): Promise<string | null> {
+export async function lockfile_hash(lockfile_path: string): Promise<string> {
     try {
         const lockfile = await fs.readFile(lockfile_path);
         return utils.json_hash(lockfile.toString());
     } catch {
-        return null;
+        throw new Error(`lockfile "${lockfile_path}" does not exist`);
     }
 }
 
+export async function lockfile_path_or_null(
+    lockfile_path: string,
+): Promise<string | null> {
+    if (lockfile_path.length == 0) {
+        try {
+            await fs.access("conan.lock", fs.constants.R_OK);
+            return "conan.lock";
+        } catch {
+            // not an error - no lockfile exists but we didn't specifically
+            // ask for one.
+            return null;
+        }
+    }
+    return lockfile_path;
+}
+
 export async function cache_key(
-    useTimestamp: boolean = false,
-    lockfile_path: string | null = null,
+    lockfile_component: string | null = null,
 ): Promise<string> {
     const v = await version();
     let key = core.getInput(Input.CacheKey);
     if (key.length == 0) {
-        const profile_key = await profile_hash();
-        let lockfile_key = null;
-        if (lockfile_path !== null && lockfile_path.length > 0) {
-            lockfile_key = await lockfile_hash(lockfile_path);
-        }
-        if (lockfile_key == null) {
-            key = profile_key;
+        const profile_component = await profile_hash();
+        if (lockfile_component === null) {
+            key = profile_component;
         } else {
-            key = `${profile_key}-${lockfile_key}`;
+            key = `${profile_component}-${lockfile_component}`;
         }
-    }
-    if (useTimestamp) {
-        return cache_key_from_components(v as Version, `${key}-${Date.now()}`);
     }
     return cache_key_from_components(v as Version, key);
 }
