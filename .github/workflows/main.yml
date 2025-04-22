@@ -61,13 +61,6 @@ jobs:
             runner: windows-latest
             append-timestamp: false
 
-          - name: specify host profiles
-            runner: ubuntu-latest
-            append-timestamp: false
-            host-profiles: |
-              default
-              host_profile
-
           - name: install config
             runner: ubuntu-latest
             config: '.github/workflows/config'
@@ -141,12 +134,25 @@ jobs:
           conan install .github --build missing
 
   action-tests-error:
-    name: 'Nonexistent lockfile is an error'
-    runs-on: ubuntu-latest
+    name: 'error: ${{ matrix.name }}'
 
     defaults:
       run:
         shell: bash
+
+    strategy:
+      matrix:
+        include:
+          - name: nonexistent lockfile
+            append-timestamp: false
+            lockfile: conan.lock
+
+          - name: nonexistent host profile
+            append-timestamp: false
+            host-profiles: |
+              not_a_profile
+
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -164,12 +170,13 @@ jobs:
             conan \
             pytest
 
-      - name: Run local action
+      - name: Run conan setup action
         id: action_run
         continue-on-error: true
         uses: ./
         with:
-          lockfile: conan.lock
+          lockfile: ${{ matrix.lockfile }}
+          host-profiles: ${{ matrix.host-profiles }}
 
       - name: Verify failure
         run: |
