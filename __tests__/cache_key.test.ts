@@ -48,9 +48,23 @@ describe("compute cache key", () => {
                 "--profile:host=default",
                 "--profile:host=linux_gcc",
             ],
-            { silent: true },
+            { silent: true, ignoreReturnCode: true },
         );
         expect(profile_hash).toMatch(/[a-z0-9]{32}/);
+    });
+
+    test("get hash of host profiles throws on conan error", async () => {
+        jest.mocked(getExecOutput).mockReturnValue(
+            Promise.resolve({
+                stdout: "{}",
+                exitCode: 1,
+                stderr: "some error",
+            }),
+        );
+
+        await expect(
+            conan.profile_hash(["default", "linux_gcc"]),
+        ).rejects.toThrow("some error");
     });
 
     test("cache key from components", () => {

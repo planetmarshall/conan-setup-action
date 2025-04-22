@@ -71,8 +71,11 @@ export async function profile_hash(host_profiles: string[]): Promise<string> {
     const result = await getExecOutput(
         "conan",
         ["profile", "show", "--format", "json"].concat(host_profile_args),
-        { silent: true },
+        { silent: true, ignoreReturnCode: true },
     );
+    if (result.exitCode != 0) {
+        throw new Error(`failed to hash profile: '${result.stderr}'`);
+    }
     return utils.json_hash(result.stdout);
 }
 
