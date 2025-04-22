@@ -63,10 +63,14 @@ export async function installed_profiles(): Promise<string[]> {
     return JSON.parse(output.stdout);
 }
 
-async function profile_hash(): Promise<string> {
+export async function profile_hash(host_profiles: string[]): Promise<string> {
+    const host_profile_args = host_profiles.map(
+        (pr) => `--profile:host=${pr}`,
+        host_profiles,
+    );
     const result = await getExecOutput(
         "conan",
-        ["profile", "show", "--format", "json"],
+        ["profile", "show", "--format", "json"].concat(host_profile_args),
         { silent: true },
     );
     return utils.json_hash(result.stdout);
@@ -98,12 +102,13 @@ export async function lockfile_path_or_null(
 }
 
 export async function cache_key(
+    host_profiles: string[],
     lockfile_component: string | null = null,
 ): Promise<string> {
     const v = await version();
     let key = core.getInput(Input.CacheKey);
     if (key.length == 0) {
-        const profile_component = await profile_hash();
+        const profile_component = await profile_hash(host_profiles);
         if (lockfile_component === null) {
             key = profile_component;
         } else {

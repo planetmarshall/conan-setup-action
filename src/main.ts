@@ -50,7 +50,10 @@ async function run(): Promise<void> {
             );
         }
 
-        const key = await conan.cache_key(lockfile_hash);
+        const key = await conan.cache_key(
+            core.getMultilineInput(Input.HostProfiles),
+            lockfile_hash,
+        );
         const primaryCacheHit = await conan.restore_cache(key);
 
         core.saveState(State.PrimaryCacheHit, primaryCacheHit);

@@ -2,12 +2,20 @@ name: Conan Setup
 description: Sets up the Conan Package Manager
 author: 'Andrew Marshall <planetmarshalluk@gmail.com>'
 inputs:
-  config:
-    description: 'Install a configuration from a file or url'
+  append-timestamp:
+    description: 'Append a timestamp to the cache key to force an overwrite of the cache'
     required: false
+    default: false
   cache-key:
     description: 'Explicitly specify a cache key to use'
     required: false
+  config:
+    description: 'Install a configuration from a file or url'
+    required: false
+  host-profiles:
+    description: A list of host profiles to use when generating the cache key
+    required: false
+    default: ''
   lockfile:
     description: |
       Path to a conan lockfile to use as part of the cache key. The default is the empty string which will use
@@ -15,10 +23,6 @@ inputs:
       a lockfile which does not exist.
     required: false
     default: ''
-  append-timestamp:
-    description: 'Append a timestamp to the cache key to force an overwrite of the cache'
-    required: false
-    default: false
   remotes:
     description: 'A list of remotes to authorize. Use environment variables to supply credentials'
     required: false

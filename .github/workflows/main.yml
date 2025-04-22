@@ -61,6 +61,13 @@ jobs:
             runner: windows-latest
             append-timestamp: false
 
+          - name: specify host profiles
+            runner: ubuntu-latest
+            append-timestamp: false
+            host-profiles: |
+              default
+              host_profile
+
           - name: install config
             runner: ubuntu-latest
             config: '.github/workflows/config'
@@ -88,6 +95,12 @@ jobs:
             append-timestamp: false
             lockfile: .github/conan.lock
 
+          - name: cache key with explicit profile
+            runner: ubuntu-latest
+            append-timestamp: false
+            host-profiles: |
+              .github/custom_profile
+
     runs-on: ${{ matrix.runner }}
 
     defaults:
@@ -110,12 +123,13 @@ jobs:
             conan \
             pytest
 
-      - name: Run local action
+      - name: Run conan setup action
         uses: ./
         with:
           config: ${{ matrix.config }}
           append-timestamp: ${{ matrix.append-timestamp }}
           lockfile: ${{ matrix.lockfile }}
+          host-profiles: ${{ matrix.host-profiles }}
 
       - name: Run tests
         if: matrix.test != ''
@@ -178,13 +192,16 @@ jobs:
             test: true
 
           - name: cache key with timestamp
-            runner: ubuntu-latest
             append-timestamp: true
 
           - name: cache key with lockfile
-            runner: ubuntu-latest
             append-timestamp: false
             lockfile: .github/conan.lock
+
+          - name: cache key with explicit profile
+            append-timestamp: false
+            host-profiles: |
+              .github/custom_profile
 
     runs-on: ubuntu-latest
     container: python:3.13
@@ -209,12 +226,13 @@ jobs:
             conan \
             pytest
 
-      - name: Run local action
+      - name: Run conan setup action
         uses: ./
         with:
           config: ${{ matrix.config }}
           append-timestamp: ${{ matrix.append-timestamp }}
           lockfile: ${{ matrix.lockfile }}
+          host-profiles: ${{ matrix.host-profiles }}
 
       - name: Run tests
         if: matrix.test != ''

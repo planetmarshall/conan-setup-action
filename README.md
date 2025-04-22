@@ -43,6 +43,31 @@ This behaviour can be customized using the configuration options
 
 ## Examples
 
+### Specifying the host profiles explicitly
+
+To specify the profiles used when generating the cache key:
+
+```yaml
+  - name: Setup conan
+    uses: conan-setup-action@main
+    with:
+      host-profiles: |
+        linux-gcc
+        release
+```
+
+### Customizing the cache key
+
+```yaml
+  - name: Setup conan
+    uses: conan-setup-action@main
+    with:
+      cache-key: my_key
+```
+
+The cache key will still have the prefix `conan-v{conan_version}-`, but the suffix will be as specified by
+`cache-key`.
+
 ### Installing a configuration
 
 Use the `config` option to 
@@ -119,14 +144,15 @@ and `conan cache save`. To deactivate this behaviour, use the `save` option.
 Configuration
 -------------
 
-| option             | description                                                                                                                                                                                | default                      |
-|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
-| `append-timestamp` | Append a timestamp to the cache key to force overwriting the cache key.                                                                                                                    | `false`                      |               
-| `cache-key`        | Specify an explicit cache key to use                                                                                                                                                       | hash of `conan profile show` |
-| `config`           | Install a configuration using `conan config install`                                                                                                                                       | `none`                       |               
-| `lockfile`         | Path to a lockfile to use as part of the cache key. The default is the empty string which will use `conan.lock` in the repository root if it exists, otherwise no lockfile will be hashed. | `none`                       |               
-| `remotes`          | A list of remotes to authorize using `conan remote auth`                                                                                                                                   | `none`                       |               
-| `save`             | Save the package cache                                                                                                                                                                     | `true`                       |               
+| option             | description                                                                                                                                                                                | default                           |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
+| `append-timestamp` | Append a timestamp to the cache key to force overwriting the cache key.                                                                                                                    | `false`                           |               
+| `cache-key`        | Specify an explicit cache key suffix to use                                                                                                                                                | `none` (calculated automatically) |
+| `config`           | Install a configuration using `conan config install`                                                                                                                                       | `none`                            |               
+| `host-profiles`    | A multiline string of host profiles to use when generating the cache key                                                                                                                   | `none` (`'default'` will be used) |
+| `lockfile`         | Path to a lockfile to use as part of the cache key. The default is the empty string which will use `conan.lock` in the repository root if it exists, otherwise no lockfile will be hashed. | `none`                            |               
+| `remotes`          | A list of remotes to authorize using `conan remote auth`                                                                                                                                   | `none`                            |               
+| `save`             | Save the package cache                                                                                                                                                                     | `true`                            |               
 
 Development
 -----------

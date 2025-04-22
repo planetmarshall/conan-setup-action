@@ -27,6 +27,32 @@ import { Version } from "../src/conan";
 import fs from "node:fs/promises";
 
 describe("compute cache key", () => {
+    test("get hash of host profiles", async () => {
+        jest.mocked(getExecOutput).mockReturnValue(
+            Promise.resolve({
+                stdout: "{}",
+                exitCode: 0,
+                stderr: "",
+            }),
+        );
+
+        const profile_hash = await conan.profile_hash(["default", "linux_gcc"]);
+
+        expect(getExecOutput).toBeCalledWith(
+            "conan",
+            [
+                "profile",
+                "show",
+                "--format",
+                "json",
+                "--profile:host=default",
+                "--profile:host=linux_gcc",
+            ],
+            { silent: true },
+        );
+        expect(profile_hash).toMatch(/[a-z0-9]{32}/);
+    });
+
     test("cache key from components", () => {
         const key = conan.cache_key_from_components(
             new Version(1, 2, 3),
@@ -45,7 +71,7 @@ describe("compute cache key", () => {
         );
         jest.mocked(getInput).mockReturnValue("");
 
-        const key = await conan.cache_key();
+        const key = await conan.cache_key(["default"]);
         expect(key).toMatch(/^conan-.+$/);
     });
 
@@ -66,7 +92,7 @@ describe("compute cache key", () => {
         );
         jest.mocked(getInput).mockReturnValue("");
 
-        const key = await conan.cache_key(lockfile_path);
+        const key = await conan.cache_key(["default"], lockfile_path);
         expect(key).toMatch(/^conan-.+$/);
     });
 
@@ -79,7 +105,7 @@ describe("compute cache key", () => {
             }),
         );
         jest.mocked(getInput).mockReturnValue("linux-x86_64-cache-key");
-        const key = await conan.cache_key();
+        const key = await conan.cache_key(["default"]);
         expect(getInput).toBeCalledWith("cache-key");
         expect(key).toEqual("conan-v2.8.0-linux-x86_64-cache-key");
     });
