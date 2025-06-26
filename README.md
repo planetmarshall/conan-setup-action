@@ -113,6 +113,8 @@ A partial key without the timestamp is used to always retrieve the latest cache.
 Supply remote credentials using environment variables. See 
 [conan remote auth](https://docs.conan.io/2/reference/commands/remote.html#conan-remote-auth) for more details
 
+The specified remotes will be enabled if they are initially disabled.
+
 ```yaml
   - name: Setup conan
     uses: conan-setup-action@main
