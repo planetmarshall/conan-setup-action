@@ -1,5 +1,6 @@
 export enum Input {
     CacheKey = "cache-key",
+    CacheEnabled = "cache",
     AppendTimestamp = "append-timestamp",
     ConfigPath = "config",
     HostProfiles = "host-profiles",

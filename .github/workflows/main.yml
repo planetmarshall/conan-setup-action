@@ -51,48 +51,53 @@ jobs:
         include:
           - name: default
             runner: ubuntu-latest
-            append-timestamp: false
+            cache: true
 
           - name: default
             runner: macos-latest
-            append-timestamp: false
+            cache: true
 
           - name: default
             runner: windows-latest
-            append-timestamp: false
+            cache: true
 
           - name: install config
             runner: ubuntu-latest
             config: '.github/workflows/config'
-            append-timestamp: false
+            cache: true
             test: true
 
           - name: install config
             runner: macos-latest
             config: '.github/workflows/config'
-            append-timestamp: false
+            cache: true
             test: true
 
           - name: install config
             runner: windows-latest
             config: '.github/workflows/config'
-            append-timestamp: false
+            cache: true
             test: true
 
           - name: cache key with timestamp
             runner: ubuntu-latest
             append-timestamp: true
+            cache: true
 
           - name: cache key with lockfile
             runner: ubuntu-latest
-            append-timestamp: false
+            cache: true
             lockfile: .github/conan.lock
 
           - name: cache key with explicit profile
             runner: ubuntu-latest
-            append-timestamp: false
+            cache: true
             host-profiles: |
               .github/custom_profile
+
+          - name: cache disabled
+            runner: ubuntu-latest
+            cache: false
 
     runs-on: ${{ matrix.runner }}
 
@@ -120,7 +125,8 @@ jobs:
         uses: ./
         with:
           config: ${{ matrix.config }}
-          append-timestamp: ${{ matrix.append-timestamp }}
+          append-timestamp: ${{ matrix.append-timestamp == true }}
+          cache: ${{ matrix.cache }}
           lockfile: ${{ matrix.lockfile }}
           host-profiles: ${{ matrix.host-profiles }}
 
