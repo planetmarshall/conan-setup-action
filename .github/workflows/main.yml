@@ -115,11 +115,8 @@ jobs:
           cache: 'pip'
           cache-dependency-path: '.github/requirements.txt'
 
-      - name: Install conan
-        run: |
-          pip install \
-            conan \
-            pytest
+      - name: Install pytest
+        run: pip install pytest
 
       - name: Run conan setup action
         uses: ./
