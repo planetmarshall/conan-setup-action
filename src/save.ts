@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 import { Input, State } from "./constants";
-import * as conan from "./conan";
+import { Conan } from "./conan";
 
 /**
  * The main function for the action.
@@ -27,6 +27,7 @@ async function post(): Promise<void> {
             key = `${key}-${Date.now()}`;
         }
         core.debug(`Saving cache with key: ${key}`);
+        const conan = new Conan(core.getState(State.ConanPath));
         await conan.save_cache(key);
         core.endGroup();
     } catch (error) {
