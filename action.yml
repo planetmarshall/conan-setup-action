@@ -34,6 +34,12 @@ inputs:
     description: 'Whether to save the package cache'
     required: false
     default: 'true'
+  version:
+    description: |
+      The conan version to install. 'latest' for the latest version, or 'auto' to use an existing version or
+      the latest if no version exists.
+    required: false
+    default: 'auto'
 branding:
   icon: 'package'
   color: 'blue'

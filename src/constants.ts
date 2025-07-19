@@ -7,9 +7,16 @@ export enum Input {
     RemotePatterns = "remotes",
     SaveCache = "save",
     Lockfile = "lockfile",
+    Version = "version",
+}
+
+export enum InstallOptions {
+    Auto = "auto",
+    Latest = "latest",
 }
 
 export enum State {
     PrimaryCacheHit = "primary_cache_hit",
     CacheKey = "cache_key",
+    ConanPath = "conan",
 }
