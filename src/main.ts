@@ -18,6 +18,29 @@ async function configure_conan(): Promise<void> {
     }
 }
 
+async function restore_cache(): Promise<void> {
+    const lockfile_path = await conan.lockfile_path_or_null(
+        core.getInput(Input.Lockfile),
+    );
+    const lockfile_hash =
+        lockfile_path != null ? await conan.lockfile_hash(lockfile_path) : null;
+
+    if (lockfile_hash != null) {
+        core.info(
+            `lockfile found at '${lockfile_path}' - appending hash to key`,
+        );
+    }
+
+    const key = await conan.cache_key(
+        core.getMultilineInput(Input.HostProfiles),
+        lockfile_hash,
+    );
+    const primaryCacheHit = await conan.restore_cache(key);
+
+    core.saveState(State.PrimaryCacheHit, primaryCacheHit);
+    core.saveState(State.CacheKey, key);
+}
+
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -35,30 +58,13 @@ async function run(): Promise<void> {
         await configure_conan();
         core.endGroup();
 
-        core.startGroup("Restoring Cache");
-        const lockfile_path = await conan.lockfile_path_or_null(
-            core.getInput(Input.Lockfile),
-        );
-        const lockfile_hash =
-            lockfile_path != null
-                ? await conan.lockfile_hash(lockfile_path)
-                : null;
-
-        if (lockfile_hash != null) {
-            core.info(
-                `lockfile found at '${lockfile_path}' - appending hash to key`,
-            );
+        if (core.getBooleanInput(Input.CacheEnabled)) {
+            core.startGroup("Restoring Cache");
+            await restore_cache();
+            core.endGroup();
+        } else {
+            core.info("Github cache is disabled");
         }
-
-        const key = await conan.cache_key(
-            core.getMultilineInput(Input.HostProfiles),
-            lockfile_hash,
-        );
-        const primaryCacheHit = await conan.restore_cache(key);
-
-        core.saveState(State.PrimaryCacheHit, primaryCacheHit);
-        core.saveState(State.CacheKey, key);
-        core.endGroup();
     } catch (error) {
         // Fail the workflow run if an error occurs
         if (error instanceof Error) core.setFailed(error.message);

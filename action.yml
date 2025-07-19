@@ -5,7 +5,11 @@ inputs:
   append-timestamp:
     description: 'Append a timestamp to the cache key to force an overwrite of the cache'
     required: false
-    default: false
+    default: 'false'
+  cache:
+    description: 'Enable the github cache'
+    required: false
+    default: 'true'
   cache-key:
     description: 'Explicitly specify a cache key to use'
     required: false
@@ -29,7 +33,11 @@ inputs:
   save:
     description: 'Whether to save the package cache'
     required: false
-    default: true
+    default: 'true'
+branding:
+  icon: 'package'
+  color: 'blue'
+
 runs:
   using: node20
   main: dist/main/index.js
