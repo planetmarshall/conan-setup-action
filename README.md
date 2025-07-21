@@ -7,10 +7,13 @@ the [Github Actions Cache](https://docs.github.com/en/actions/writing-workflows/
 and the conan cache [save / restore](https://docs.conan.io/2/devops/save_restore.html) feature to share the package cache
 between CI runs.
 
+The default behaviour is to install the latest version of conan if a version is not
+already present, and add it to the `PATH` for subsequent steps.
+
 Usage
 -----
 
-Requires conan to be installed as a prerequisite. For example, use the following
+Requires Python to be installed as a prerequisite. For example, use the following
 in your workflow
 
 ```yaml
@@ -18,11 +21,8 @@ in your workflow
     with:
       python-version: '3.12'
 
-  - name: Install conan
-    run: pip install conan
-
   - name: Setup conan
-    uses: conan-setup-action@main
+    uses: conan-setup-action@v1.0.0
 ```
 
 ## Cache Key Generation
@@ -43,13 +43,44 @@ This behaviour can be customized using the configuration options
 
 ## Examples
 
+### Specifying the version to install
+
+To always use a specific version
+
+```
+  - name: Setup conan
+    uses: conan-setup-action@v1.0.0
+    with:
+      version: 2.18.1
+```
+
+To always use the latest version
+
+```
+  - name: Setup conan
+    uses: conan-setup-action@v1.0.0
+    with:
+      version: latest
+```
+
+To use whatever is already installed, or install the latest version (default)
+
+```
+  - name: Setup conan
+    uses: conan-setup-action@v1.0.0
+    with:
+      version: auto
+```
+
+In all cases the `PATH` will be modified to make conan available to subsequent steps.
+
 ### Specifying the host profiles explicitly
 
 To specify the profiles used when generating the cache key:
 
 ```yaml
   - name: Setup conan
-    uses: conan-setup-action@main
+    uses: conan-setup-action@v1.0.0
     with:
       host-profiles: |
         linux-gcc
@@ -60,7 +91,7 @@ To specify the profiles used when generating the cache key:
 
 ```yaml
   - name: Setup conan
-    uses: conan-setup-action@main
+    uses: conan-setup-action@v1.0.0
     with:
       cache-key: my_key
 ```
@@ -76,7 +107,7 @@ Use the `config` option to
 
 ```yaml
   - name: Setup conan
-    uses: conan-setup-action@main
+    uses: conan-setup-action@v1.0.0
     with:
       config: https://github.com/planetmarshall/conan_config
 ```
@@ -91,7 +122,7 @@ A partial key without the timestamp is used to always retrieve the latest cache.
 
 ```yaml
   - name: Setup conan
-    uses: conan-setup-action@main
+    uses: conan-setup-action@v1.0.0
     with:
        append-timestamp: true
 ```
@@ -105,7 +136,7 @@ The specified remotes will be enabled if they are initially disabled.
 
 ```yaml
   - name: Setup conan
-    uses: conan-setup-action@main
+    uses: conan-setup-action@v1.0.0
     env:
        CONAN_LOGIN_USERNAME_REMOTE_1: user1
        CONAN_PASSWORD_REMOTE_1: p455w0rd_1
@@ -126,7 +157,7 @@ and `conan cache save`. To deactivate this behaviour, use the `save` option.
 
 ```yaml
   - name: Setup conan
-    uses: conan-setup-action@main
+    uses: conan-setup-action@v1.0.0
     with:
       save: ${{ github.ref_name == 'main' }}
 ```
@@ -137,7 +168,7 @@ The github cache can be deactivated entirely using the `cache` option.
 
 ```yaml
   - name: Setup conan
-    uses: conan-setup-action@main
+    uses: conan-setup-action@v1.0.0
     with:
       cache: false
 ```
@@ -155,6 +186,7 @@ Configuration
 | `lockfile`         | Path to a lockfile to use as part of the cache key. The default is the empty string which will use `conan.lock` in the repository root if it exists, otherwise no lockfile will be hashed. | `none`                           |               
 | `remotes`          | A list of remotes to authorize using `conan remote auth`                                                                                                                                   | `none`                           |               
 | `save`             | Save the package cache                                                                                                                                                                     | `true`                           |               
+| `version`          | Specify the version to install. 'auto' uses an existing conan if it exists, otherwise installs the latest version. Use 'latest' to always install the latest version.                      | `auto`                           |
 
 Development
 -----------
