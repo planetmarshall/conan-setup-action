@@ -47,7 +47,7 @@ This behaviour can be customized using the configuration options
 
 To always use a specific version
 
-```
+```yaml
   - name: Setup conan
     uses: conan-setup-action@v1.0.0
     with:
@@ -56,7 +56,7 @@ To always use a specific version
 
 To always use the latest version
 
-```
+```yaml
   - name: Setup conan
     uses: conan-setup-action@v1.0.0
     with:
@@ -65,7 +65,7 @@ To always use the latest version
 
 To use whatever is already installed, or install the latest version (default)
 
-```
+```yaml
   - name: Setup conan
     uses: conan-setup-action@v1.0.0
     with:

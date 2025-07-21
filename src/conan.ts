@@ -36,7 +36,6 @@ export async function install(versionOption: string): Promise<Conan> {
     } else {
         core.info(`Installing version ${versionOption}`);
         await exec(pip, ["install", `conan==${versionOption}`], {
-            silent: true,
             ignoreReturnCode: false,
         });
     }
