@@ -73,6 +73,16 @@ export async function lockfile_path_or_null(
     return lockfile_path;
 }
 
+export function check_auth_success(result_json: string) {
+    const result_obj = JSON.parse(result_json);
+    for (const key in result_obj) {
+        const err = result_obj[key].error;
+        if (err != null) {
+            throw Error(err);
+        }
+    }
+}
+
 export function cache_key_from_components(
     version: Version,
     key_suffix: string,
@@ -102,7 +112,16 @@ export class Conan {
     async authorize_remotes(patterns: string[]): Promise<void> {
         for (const pattern of patterns) {
             await exec(this.path, ["remote", "enable", pattern]);
-            await exec(this.path, ["remote", "auth", pattern, "--force"]);
+            await exec(this.path, [
+                "remote",
+                "auth",
+                pattern,
+                "--force",
+                "--out-file=auth.json",
+                "--format=json",
+            ]);
+            const result = await fs.readFile("auth.json");
+            check_auth_success(result.toString());
         }
     }
 

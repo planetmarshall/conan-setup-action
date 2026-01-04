@@ -1,5 +1,5 @@
 import { describe, expect, test, jest } from "@jest/globals";
-import { Conan, lockfile_path_or_null } from "../src/conan";
+import { check_auth_success, Conan, lockfile_path_or_null } from "../src/conan";
 
 jest.mock("@actions/exec", () => ({
     getExecOutput: jest.fn(),
@@ -11,7 +11,7 @@ jest.mock("node:fs/promises", () => ({
         R_OK: 1,
     },
     access: jest.fn(),
-    readFile: jest.fn(),
+    readFile: jest.fn(() => Promise.resolve("{}")),
 }));
 
 jest.mock("@actions/cache", () => ({
@@ -85,6 +85,8 @@ describe("conan module", () => {
             "auth",
             "my_remote",
             "--force",
+            "--out-file=auth.json",
+            "--format=json",
         ]);
         expect(exec).toBeCalledWith("conan", ["remote", "enable", "*"]);
         expect(exec).toBeCalledWith("conan", [
@@ -92,7 +94,21 @@ describe("conan module", () => {
             "auth",
             "*",
             "--force",
+            "--out-file=auth.json",
+            "--format=json",
         ]);
+    });
+
+    test("fail if remote auth fails", () => {
+        const response = '{"my-remote": {"error": "Authentication error"}}';
+        expect(() => check_auth_success(response)).toThrowError(
+            Error("Authentication error"),
+        );
+    });
+
+    test("check auth is null on success", () => {
+        const response = '{"my-remote": {"user": "me"}}';
+        expect(() => check_auth_success(response)).not.toThrow();
     });
 
     test("detect default profile", async () => {
