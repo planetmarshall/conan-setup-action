@@ -18,3 +18,18 @@ export function parse_latest_version(pip_index_output: string): Version {
     const semver = latest.trim().split(/\s+/);
     return parse_version(semver[1]);
 }
+
+export function check_auth_success(result_json: string) {
+    const result_obj = JSON.parse(result_json);
+    for (const key in result_obj) {
+        const err = result_obj[key].error;
+        if (err != null) {
+            throw Error(err);
+        }
+    }
+}
+
+export function check_cache_validity(result_json: string) {
+    const result_obj = JSON.parse(result_json);
+    return Object.keys(result_obj["Local Cache"]).length > 0;
+}

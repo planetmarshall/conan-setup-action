@@ -73,16 +73,6 @@ export async function lockfile_path_or_null(
     return lockfile_path;
 }
 
-export function check_auth_success(result_json: string) {
-    const result_obj = JSON.parse(result_json);
-    for (const key in result_obj) {
-        const err = result_obj[key].error;
-        if (err != null) {
-            throw Error(err);
-        }
-    }
-}
-
 export function cache_key_from_components(
     version: Version,
     key_suffix: string,
@@ -121,7 +111,7 @@ export class Conan {
                 "--format=json",
             ]);
             const result = await fs.readFile("auth.json");
-            check_auth_success(result.toString());
+            utils.check_auth_success(result.toString());
         }
     }
 
@@ -181,7 +171,18 @@ export class Conan {
         } else {
             core.info(`Cache hit on key: ${cacheHitKey}`);
             core.debug(`Restoring cache file to ${cacheFile}`);
-            await exec(this.path, ["cache", "restore", cacheFile]);
+            await exec(this.path, [
+                "cache",
+                "restore",
+                cacheFile,
+                "--out-file=restore.json",
+                "--format=json",
+            ]);
+            const result = await fs.readFile("restore.json");
+            if (!utils.check_cache_validity(result.toString())) {
+                core.info("Cache hit but cache was empty");
+                return false;
+            }
             return key === cacheHitKey;
         }
     }
