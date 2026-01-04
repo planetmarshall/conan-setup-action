@@ -158,13 +158,14 @@ jobs:
       matrix:
         include:
           - name: nonexistent lockfile
-            append-timestamp: false
             lockfile: conan.lock
 
           - name: nonexistent host profile
-            append-timestamp: false
             host-profiles: |
               not_a_profile
+
+          - name: remote authorization fail
+            remotes: conancenter
 
     runs-on: ubuntu-latest
 
@@ -183,12 +184,17 @@ jobs:
           pip install pytest
 
       - name: Run conan setup action
+        env:
+          CONAN_LOGIN_USERNAME: user
+          CONAN_PASSWORD: password
         id: action_run
         continue-on-error: true
         uses: ./
         with:
+          config: .github/workflows/config
           lockfile: ${{ matrix.lockfile }}
           host-profiles: ${{ matrix.host-profiles }}
+          remotes: ${{ matrix.remotes }}
 
       - name: Verify failure
         run: |
