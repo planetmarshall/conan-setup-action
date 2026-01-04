@@ -1,13 +1,13 @@
 import { describe, expect, test } from "@jest/globals";
-import { json_hash, parse_latest_version } from "../src/utils";
+import * as utils from "../src/utils";
 
 describe("utils module", () => {
     test("hash from profile json is deterministic", async () => {
         const profile_a = `{"host": {"settings": {"arch": "x86_64", "compiler": "gcc"}}, "build": {"settings": {"compiler": "gcc"}}}`;
         const profile_b = `{"build": {"settings": {"compiler": "gcc"}}, "host": {"settings": {"compiler": "gcc", "arch": "x86_64"}}}`;
 
-        const h_a = json_hash(profile_a);
-        const h_b = json_hash(profile_b);
+        const h_a = utils.json_hash(profile_a);
+        const h_b = utils.json_hash(profile_b);
 
         expect(h_a.length).toBeGreaterThan(0);
         expect(h_a).toEqual(h_b);
@@ -19,11 +19,33 @@ Available versions: 2.18.1, 2.18.0, 2.17.1, 2.17.0, 2.16.1, 2.16.0, 2.15.1, 2.15
   INSTALLED: 2.18.1
   LATEST:    2.18.1
 `;
-        const latest = parse_latest_version(output);
+        const latest = utils.parse_latest_version(output);
         expect(latest).toBeDefined();
         expect(latest).not.toEqual("");
         if (latest) {
             expect(latest.toString()).toEqual("2.18.1");
         }
+    });
+
+    test("fail if remote auth fails", () => {
+        const response = '{"my-remote": {"error": "Authentication error"}}';
+        expect(() => utils.check_auth_success(response)).toThrowError(
+            Error("Authentication error"),
+        );
+    });
+
+    test("check auth is null on success", () => {
+        const response = '{"my-remote": {"user": "me"}}';
+        expect(() => utils.check_auth_success(response)).not.toThrow();
+    });
+
+    test("cache is invalid if empty", () => {
+        const response = '{"Local Cache": {}}';
+        expect(utils.check_cache_validity(response)).toBe(false);
+    });
+
+    test("cache is valid if non-empty", () => {
+        const response = '{"Local Cache": { "zlib/1.3.1": {}}}';
+        expect(utils.check_cache_validity(response)).toBe(true);
     });
 });

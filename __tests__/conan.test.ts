@@ -1,5 +1,5 @@
 import { describe, expect, test, jest } from "@jest/globals";
-import { check_auth_success, Conan, lockfile_path_or_null } from "../src/conan";
+import { Conan, lockfile_path_or_null } from "../src/conan";
 
 jest.mock("@actions/exec", () => ({
     getExecOutput: jest.fn(),
@@ -11,7 +11,7 @@ jest.mock("node:fs/promises", () => ({
         R_OK: 1,
     },
     access: jest.fn(),
-    readFile: jest.fn(() => Promise.resolve("{}")),
+    readFile: jest.fn(() => Promise.resolve('{ "Local Cache": { "zlib": {}}}')),
 }));
 
 jest.mock("@actions/cache", () => ({
@@ -99,18 +99,6 @@ describe("conan module", () => {
         ]);
     });
 
-    test("fail if remote auth fails", () => {
-        const response = '{"my-remote": {"error": "Authentication error"}}';
-        expect(() => check_auth_success(response)).toThrowError(
-            Error("Authentication error"),
-        );
-    });
-
-    test("check auth is null on success", () => {
-        const response = '{"my-remote": {"user": "me"}}';
-        expect(() => check_auth_success(response)).not.toThrow();
-    });
-
     test("detect default profile", async () => {
         const conan = new Conan("conan");
         await conan.detect_default_profile();
@@ -149,6 +137,8 @@ describe("conan module", () => {
             "cache",
             "restore",
             cacheFile,
+            "--out-file=restore.json",
+            "--format=json",
         ]);
     });
 
@@ -168,6 +158,8 @@ describe("conan module", () => {
             "cache",
             "restore",
             cacheFile,
+            "--out-file=restore.json",
+            "--format=json",
         ]);
     });
 
