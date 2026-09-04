@@ -5,14 +5,10 @@ jest.mock("@actions/exec", () => ({
     exec: jest.fn(),
 }));
 
-jest.mock(
-    "@actions/cache",
-    () => ({
-        restoreCache: jest.fn(),
-        saveCache: jest.fn(),
-    }),
-    { virtual: true },
-);
+jest.mock("@actions/cache", () => ({
+    restoreCache: jest.fn(),
+    saveCache: jest.fn(),
+}));
 
 jest.mock("@actions/core", () => ({
     getInput: jest.fn(),

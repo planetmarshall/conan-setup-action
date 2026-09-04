@@ -14,14 +14,10 @@ jest.mock("node:fs/promises", () => ({
     readFile: jest.fn(() => Promise.resolve('{ "Local Cache": { "zlib": {}}}')),
 }));
 
-jest.mock(
-    "@actions/cache",
-    () => ({
-        restoreCache: jest.fn(),
-        saveCache: jest.fn(),
-    }),
-    { virtual: true },
-);
+jest.mock("@actions/cache", () => ({
+    restoreCache: jest.fn(),
+    saveCache: jest.fn(),
+}));
 
 jest.mock("@actions/core", () => ({
     getInput: jest.fn(),
