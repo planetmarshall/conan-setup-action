@@ -4,10 +4,10 @@ import * as io from "@actions/io";
 import * as cache from "@actions/cache";
 import * as utils from "./utils";
 import * as fs from "node:fs/promises";
-import * as uuid from "uuid";
 import { Input, InstallOptions } from "./constants";
 import * as os from "node:os";
 import { Version, parse_version } from "./version";
+import * as crypto from "node:crypto";
 
 function pip_exe(venv: string): string {
     if (core.platform.isWindows) {
@@ -18,7 +18,7 @@ function pip_exe(venv: string): string {
 }
 
 export async function install(versionOption: string): Promise<Conan> {
-    const installDir = `${os.tmpdir()}/${uuid.v4()}/conan-${versionOption}`;
+    const installDir = `${os.tmpdir()}/${crypto.randomUUID()}/conan-${versionOption}`;
     const pip = pip_exe(installDir);
     await io.mkdirP(installDir);
     core.debug(`Installing python virtualenv to "${installDir}"`);
