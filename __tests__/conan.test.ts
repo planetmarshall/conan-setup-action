@@ -14,10 +14,14 @@ jest.mock("node:fs/promises", () => ({
     readFile: jest.fn(() => Promise.resolve('{ "Local Cache": { "zlib": {}}}')),
 }));
 
-jest.mock("@actions/cache", () => ({
-    restoreCache: jest.fn(),
-    saveCache: jest.fn(),
-}));
+jest.mock(
+    "@actions/cache",
+    () => ({
+        restoreCache: jest.fn(),
+        saveCache: jest.fn(),
+    }),
+    { virtual: true },
+);
 
 jest.mock("@actions/core", () => ({
     getInput: jest.fn(),
@@ -49,7 +53,7 @@ describe("conan module", () => {
         jest.mocked(fs.access).mockReturnValueOnce(Promise.resolve());
         const lockfile_path = await lockfile_path_or_null("");
 
-        expect(fs.access).toBeCalledWith("conan.lock", fs.constants.R_OK);
+        expect(fs.access).toHaveBeenCalledWith("conan.lock", fs.constants.R_OK);
         expect(lockfile_path).toEqual("conan.lock");
     });
 
@@ -57,7 +61,7 @@ describe("conan module", () => {
         jest.mocked(fs.access).mockReturnValueOnce(Promise.reject());
         const lockfile_path = await lockfile_path_or_null("");
 
-        expect(fs.access).toBeCalledWith("conan.lock", fs.constants.R_OK);
+        expect(fs.access).toHaveBeenCalledWith("conan.lock", fs.constants.R_OK);
         expect(lockfile_path).toBeNull();
     });
 
@@ -69,7 +73,7 @@ describe("conan module", () => {
     test("install config", async () => {
         const conan = new Conan("conan");
         await conan.install_config("some_config");
-        expect(exec).toBeCalledWith("conan", [
+        expect(exec).toHaveBeenCalledWith("conan", [
             "config",
             "install",
             "some_config",
@@ -79,8 +83,12 @@ describe("conan module", () => {
     test("auth remote", async () => {
         const conan = new Conan("conan");
         await conan.authorize_remotes(["my_remote", "*"]);
-        expect(exec).toBeCalledWith("conan", ["remote", "enable", "my_remote"]);
-        expect(exec).toBeCalledWith("conan", [
+        expect(exec).toHaveBeenCalledWith("conan", [
+            "remote",
+            "enable",
+            "my_remote",
+        ]);
+        expect(exec).toHaveBeenCalledWith("conan", [
             "remote",
             "auth",
             "my_remote",
@@ -88,8 +96,8 @@ describe("conan module", () => {
             "--out-file=auth.json",
             "--format=json",
         ]);
-        expect(exec).toBeCalledWith("conan", ["remote", "enable", "*"]);
-        expect(exec).toBeCalledWith("conan", [
+        expect(exec).toHaveBeenCalledWith("conan", ["remote", "enable", "*"]);
+        expect(exec).toHaveBeenCalledWith("conan", [
             "remote",
             "auth",
             "*",
@@ -102,7 +110,7 @@ describe("conan module", () => {
     test("detect default profile", async () => {
         const conan = new Conan("conan");
         await conan.detect_default_profile();
-        expect(exec).toBeCalledWith("conan", ["profile", "detect"]);
+        expect(exec).toHaveBeenCalledWith("conan", ["profile", "detect"]);
     });
 
     test("list installed profiles", async () => {
@@ -131,7 +139,9 @@ describe("conan module", () => {
 
         const conan = new Conan("conan");
         await conan.restore_cache(cacheKey);
-        expect(restoreCache).toBeCalledWith([cacheFile], cacheKey, [cacheKey]);
+        expect(restoreCache).toHaveBeenCalledWith([cacheFile], cacheKey, [
+            cacheKey,
+        ]);
 
         expect(exec).toHaveBeenCalledWith("conan", [
             "cache",
@@ -152,7 +162,9 @@ describe("conan module", () => {
 
         const conan = new Conan("conan");
         await conan.restore_cache(cacheKey);
-        expect(restoreCache).toBeCalledWith([cacheFile], cacheKey, [cacheKey]);
+        expect(restoreCache).toHaveBeenCalledWith([cacheFile], cacheKey, [
+            cacheKey,
+        ]);
 
         expect(exec).toHaveBeenCalledWith("conan", [
             "cache",
@@ -190,6 +202,6 @@ describe("conan module", () => {
             "/faketmp/conan-cache.tgz",
             "*:*",
         ]);
-        expect(saveCache).toBeCalled();
+        expect(saveCache).toHaveBeenCalled();
     });
 });

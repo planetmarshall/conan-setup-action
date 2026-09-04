@@ -5,10 +5,14 @@ jest.mock("@actions/exec", () => ({
     exec: jest.fn(),
 }));
 
-jest.mock("@actions/cache", () => ({
-    restoreCache: jest.fn(),
-    saveCache: jest.fn(),
-}));
+jest.mock(
+    "@actions/cache",
+    () => ({
+        restoreCache: jest.fn(),
+        saveCache: jest.fn(),
+    }),
+    { virtual: true },
+);
 
 jest.mock("@actions/core", () => ({
     getInput: jest.fn(),
@@ -38,7 +42,7 @@ describe("compute cache key", () => {
         const conan = new Conan("conan");
         const profile_hash = await conan.profile_hash(["default", "linux_gcc"]);
 
-        expect(getExecOutput).toBeCalledWith(
+        expect(getExecOutput).toHaveBeenCalledWith(
             "conan",
             [
                 "profile",
@@ -84,7 +88,7 @@ describe("compute cache key", () => {
         jest.mocked(getInput).mockReturnValue("linux-x86_64-cache-key");
         const conan = new Conan("conan");
         const key = await conan.cache_key(["default"]);
-        expect(getInput).toBeCalledWith("cache-key");
+        expect(getInput).toHaveBeenCalledWith("cache-key");
         expect(key).toEqual("conan-v2.8.0-linux-x86_64-cache-key");
     });
 });

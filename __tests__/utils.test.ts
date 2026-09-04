@@ -29,7 +29,7 @@ Available versions: 2.18.1, 2.18.0, 2.17.1, 2.17.0, 2.16.1, 2.16.0, 2.15.1, 2.15
 
     test("fail if remote auth fails", () => {
         const response = '{"my-remote": {"error": "Authentication error"}}';
-        expect(() => utils.check_auth_success(response)).toThrowError(
+        expect(() => utils.check_auth_success(response)).toThrow(
             Error("Authentication error"),
         );
     });
