@@ -37,7 +37,7 @@
     "typescript-eslint": "^8.15.0"
   },
   "dependencies": {
-    "@actions/cache": "^4.0.0",
+    "@actions/cache": "^6.2.0",
     "@actions/core": "^1.11.1",
     "@actions/exec": "^1.1.1",
     "fast-json-stable-stringify": "^2.1.0",
