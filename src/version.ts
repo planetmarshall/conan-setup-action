@@ -1,5 +1,5 @@
 import { getExecOutput } from "@actions/exec";
-import { parse_latest_version } from "./utils";
+import { parse_latest_version } from "./utils.js";
 
 export class Version {
     major: number;

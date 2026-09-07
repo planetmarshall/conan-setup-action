@@ -3,6 +3,8 @@
 import commonjs from "@rollup/plugin-commonjs";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
+import json from "@rollup/plugin-json";
+import terser from "@rollup/plugin-terser";
 
 const main_config = {
     input: "src/main.ts",
@@ -12,7 +14,13 @@ const main_config = {
         format: "es",
         sourcemap: true,
     },
-    plugins: [typescript(), nodeResolve({ preferBuiltins: true }), commonjs()],
+    plugins: [
+        typescript(),
+        nodeResolve({ preferBuiltins: true }),
+        commonjs(),
+        json(),
+        terser(),
+    ],
 };
 
 const save_config = {
@@ -23,7 +31,13 @@ const save_config = {
         format: "es",
         sourcemap: true,
     },
-    plugins: [typescript(), nodeResolve({ preferBuiltins: true }), commonjs()],
+    plugins: [
+        typescript(),
+        nodeResolve({ preferBuiltins: true }),
+        commonjs(),
+        json(),
+        terser(),
+    ],
 };
 
 export default [main_config, save_config];

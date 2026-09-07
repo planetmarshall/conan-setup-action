@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import * as utils from "../src/utils";
+import * as utils from "../src/utils.js";
 
 describe("utils module", () => {
     test("hash from profile json is deterministic", async () => {
