@@ -1,39 +1,19 @@
 import { describe, expect, test, jest } from "@jest/globals";
-import { Conan, lockfile_path_or_null } from "../src/conan";
+import * as exec from "../__fixtures__/exec.js";
+import * as fs from "../__fixtures__/fs.js";
+import * as cache from "../__fixtures__/cache.js";
 
-jest.mock("@actions/exec", () => ({
-    getExecOutput: jest.fn(),
-    exec: jest.fn(),
-}));
+jest.unstable_mockModule("@actions/exec", () => exec);
 
-jest.mock("node:fs/promises", () => ({
-    constants: {
-        R_OK: 1,
-    },
-    access: jest.fn(),
-    readFile: jest.fn(() => Promise.resolve('{ "Local Cache": { "zlib": {}}}')),
-}));
+jest.unstable_mockModule("node:fs/promises", () => fs);
 
-jest.mock("@actions/cache", () => ({
-    restoreCache: jest.fn(),
-    saveCache: jest.fn(),
-}));
+jest.unstable_mockModule("@actions/cache", () => cache);
 
-jest.mock("@actions/core", () => ({
-    getInput: jest.fn(),
-    debug: jest.fn(),
-    info: jest.fn(),
-    startGroup: jest.fn(),
-    endGroup: jest.fn(),
-}));
-
-import { getExecOutput, exec } from "@actions/exec";
-import { restoreCache, saveCache } from "@actions/cache";
-import * as fs from "node:fs/promises";
+const { Conan, lockfile_path_or_null } = await import("../src/conan.js");
 
 describe("conan module", () => {
     test("get version if conan is installed", async () => {
-        jest.mocked(getExecOutput).mockReturnValueOnce(
+        jest.mocked(exec.getExecOutput).mockReturnValueOnce(
             Promise.resolve({
                 stdout: "Conan version 2.8.0",
                 exitCode: 0,
@@ -49,7 +29,7 @@ describe("conan module", () => {
         jest.mocked(fs.access).mockReturnValueOnce(Promise.resolve());
         const lockfile_path = await lockfile_path_or_null("");
 
-        expect(fs.access).toBeCalledWith("conan.lock", fs.constants.R_OK);
+        expect(fs.access).toHaveBeenCalledWith("conan.lock", fs.constants.R_OK);
         expect(lockfile_path).toEqual("conan.lock");
     });
 
@@ -57,7 +37,7 @@ describe("conan module", () => {
         jest.mocked(fs.access).mockReturnValueOnce(Promise.reject());
         const lockfile_path = await lockfile_path_or_null("");
 
-        expect(fs.access).toBeCalledWith("conan.lock", fs.constants.R_OK);
+        expect(fs.access).toHaveBeenCalledWith("conan.lock", fs.constants.R_OK);
         expect(lockfile_path).toBeNull();
     });
 
@@ -69,7 +49,7 @@ describe("conan module", () => {
     test("install config", async () => {
         const conan = new Conan("conan");
         await conan.install_config("some_config");
-        expect(exec).toBeCalledWith("conan", [
+        expect(exec.exec).toHaveBeenCalledWith("conan", [
             "config",
             "install",
             "some_config",
@@ -79,8 +59,12 @@ describe("conan module", () => {
     test("auth remote", async () => {
         const conan = new Conan("conan");
         await conan.authorize_remotes(["my_remote", "*"]);
-        expect(exec).toBeCalledWith("conan", ["remote", "enable", "my_remote"]);
-        expect(exec).toBeCalledWith("conan", [
+        expect(exec.exec).toHaveBeenCalledWith("conan", [
+            "remote",
+            "enable",
+            "my_remote",
+        ]);
+        expect(exec.exec).toHaveBeenCalledWith("conan", [
             "remote",
             "auth",
             "my_remote",
@@ -88,8 +72,12 @@ describe("conan module", () => {
             "--out-file=auth.json",
             "--format=json",
         ]);
-        expect(exec).toBeCalledWith("conan", ["remote", "enable", "*"]);
-        expect(exec).toBeCalledWith("conan", [
+        expect(exec.exec).toHaveBeenCalledWith("conan", [
+            "remote",
+            "enable",
+            "*",
+        ]);
+        expect(exec.exec).toHaveBeenCalledWith("conan", [
             "remote",
             "auth",
             "*",
@@ -102,12 +90,12 @@ describe("conan module", () => {
     test("detect default profile", async () => {
         const conan = new Conan("conan");
         await conan.detect_default_profile();
-        expect(exec).toBeCalledWith("conan", ["profile", "detect"]);
+        expect(exec.exec).toHaveBeenCalledWith("conan", ["profile", "detect"]);
     });
 
     test("list installed profiles", async () => {
         const profiles_json: string = '[ "default", "gcc" ]';
-        jest.mocked(getExecOutput).mockReturnValueOnce(
+        jest.mocked(exec.getExecOutput).mockReturnValueOnce(
             Promise.resolve({
                 stdout: profiles_json,
                 exitCode: 0,
@@ -125,15 +113,17 @@ describe("conan module", () => {
         process.env.RUNNER_TEMP = "/faketmp";
         const cacheKey = "12345-key";
         const cacheFile = "/faketmp/conan-cache.tgz";
-        jest.mocked(restoreCache).mockReturnValueOnce(
+        jest.mocked(cache.restoreCache).mockReturnValueOnce(
             Promise.resolve(cacheKey),
         );
 
         const conan = new Conan("conan");
         await conan.restore_cache(cacheKey);
-        expect(restoreCache).toBeCalledWith([cacheFile], cacheKey, [cacheKey]);
+        expect(cache.restoreCache).toHaveBeenCalledWith([cacheFile], cacheKey, [
+            cacheKey,
+        ]);
 
-        expect(exec).toHaveBeenCalledWith("conan", [
+        expect(exec.exec).toHaveBeenCalledWith("conan", [
             "cache",
             "restore",
             cacheFile,
@@ -146,15 +136,17 @@ describe("conan module", () => {
         process.env.RUNNER_TEMP = "/faketmp";
         const cacheKey = "12345-key";
         const cacheFile = "/faketmp/conan-cache.tgz";
-        jest.mocked(restoreCache).mockReturnValueOnce(
+        jest.mocked(cache.restoreCache).mockReturnValueOnce(
             Promise.resolve("12345-key-1"),
         );
 
         const conan = new Conan("conan");
         await conan.restore_cache(cacheKey);
-        expect(restoreCache).toBeCalledWith([cacheFile], cacheKey, [cacheKey]);
+        expect(cache.restoreCache).toHaveBeenCalledWith([cacheFile], cacheKey, [
+            cacheKey,
+        ]);
 
-        expect(exec).toHaveBeenCalledWith("conan", [
+        expect(exec.exec).toHaveBeenCalledWith("conan", [
             "cache",
             "restore",
             cacheFile,
@@ -166,7 +158,7 @@ describe("conan module", () => {
     test("return true if there is a cache hit on the primary key", async () => {
         process.env.RUNNER_TEMP = "/faketmp";
         const cacheKey = "12345-key";
-        jest.mocked(restoreCache).mockReturnValueOnce(
+        jest.mocked(cache.restoreCache).mockReturnValueOnce(
             Promise.resolve(cacheKey),
         );
 
@@ -180,8 +172,12 @@ describe("conan module", () => {
         const conan = new Conan("conan");
         await conan.save_cache("key");
 
-        expect(exec).toHaveBeenCalledWith("conan", ["cache", "clean", "*"]);
-        expect(exec).toHaveBeenCalledWith("conan", [
+        expect(exec.exec).toHaveBeenCalledWith("conan", [
+            "cache",
+            "clean",
+            "*",
+        ]);
+        expect(exec.exec).toHaveBeenCalledWith("conan", [
             "cache",
             "save",
             "--core-conf",
@@ -190,6 +186,6 @@ describe("conan module", () => {
             "/faketmp/conan-cache.tgz",
             "*:*",
         ]);
-        expect(saveCache).toBeCalled();
+        expect(cache.saveCache).toHaveBeenCalled();
     });
 });

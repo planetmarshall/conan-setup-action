@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import { Version } from "../src/version";
+import { Version } from "../src/version.js";
 
 describe("version module", () => {
     test("compare version with string", () => {

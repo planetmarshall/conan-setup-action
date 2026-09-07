@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
-import { Input, State } from "./constants";
-import { Conan } from "./conan";
+import { Input, State } from "./constants.js";
+import { Conan } from "./conan.js";
 
 /**
  * The main function for the action.

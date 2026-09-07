@@ -1,5 +1,5 @@
 import { Md5 } from "ts-md5";
-import { parse_version, Version } from "./version";
+import { parse_version, Version } from "./version.js";
 import stringify from "fast-json-stable-stringify";
 
 export function json_hash(profile_json: string): string {

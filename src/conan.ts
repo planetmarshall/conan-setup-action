@@ -2,11 +2,11 @@ import { getExecOutput, exec } from "@actions/exec";
 import * as core from "@actions/core";
 import * as io from "@actions/io";
 import * as cache from "@actions/cache";
-import * as utils from "./utils";
+import * as utils from "./utils.js";
 import * as fs from "node:fs/promises";
-import { Input, InstallOptions } from "./constants";
+import { Input, InstallOptions } from "./constants.js";
 import * as os from "node:os";
-import { Version, parse_version } from "./version";
+import { Version, parse_version } from "./version.js";
 import * as crypto from "node:crypto";
 
 function pip_exe(venv: string): string {

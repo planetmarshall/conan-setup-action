@@ -1,13 +1,13 @@
 import * as core from "@actions/core";
-import { Input, State, InstallOptions } from "./constants";
+import { Input, State, InstallOptions } from "./constants.js";
 import {
     Conan,
     install,
     get_lockfile_hash,
     lockfile_path_or_null,
-} from "./conan";
+} from "./conan.js";
 import * as io from "@actions/io";
-import { get_latest_version } from "./version";
+import { get_latest_version } from "./version.js";
 import * as path from "node:path";
 
 /**
