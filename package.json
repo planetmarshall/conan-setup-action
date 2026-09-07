@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "bundle": "npm run format:write && npm run package",
-    "ci-test": "npx jest",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest",
+    "ci-test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
     "format:check": "npx prettier --check .",
     "format:write": "npx prettier --write .",
     "lint": "npx eslint .",
