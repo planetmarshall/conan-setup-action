@@ -8,17 +8,22 @@ import { Input, InstallOptions } from "./constants.js";
 import * as os from "node:os";
 import { Version, parse_version } from "./version.js";
 import * as crypto from "node:crypto";
+import * as path from "node:path";
 
 function pip_exe(venv: string): string {
     if (core.platform.isWindows) {
-        return `${venv}/Scripts/pip`;
+        return path.join(venv, "Scripts", "pip");
     } else {
-        return `${venv}/bin/pip`;
+        return path.join(venv, "bin", "pip");
     }
 }
 
 export async function install(versionOption: string): Promise<Conan> {
-    const installDir = `${os.tmpdir()}/${crypto.randomUUID()}/conan-${versionOption}`;
+    const installDir = path.join(
+        os.tmpdir(),
+        crypto.randomUUID(),
+        `conan-${versionOption}`,
+    );
     const pip = pip_exe(installDir);
     await io.mkdirP(installDir);
     core.debug(`Installing python virtualenv to "${installDir}"`);
@@ -40,9 +45,9 @@ export async function install(versionOption: string): Promise<Conan> {
         });
     }
     if (core.platform.isWindows) {
-        return new Conan(core.toWin32Path(`${installDir}/Scripts/conan`));
+        return new Conan(path.join(installDir, "Scripts", "conan"));
     } else {
-        return new Conan(`${installDir}/bin/conan`);
+        return new Conan(path.join(installDir, "bin", "conan"));
     }
 }
 
@@ -162,8 +167,8 @@ export class Conan {
     }
 
     async restore_cache(key: string): Promise<boolean> {
-        const tempdir = process.env["RUNNER_TEMP"];
-        const cacheFile = `${tempdir}/conan-cache.tgz`;
+        const tempdir = process.env["RUNNER_TEMP"] || os.tmpdir();
+        const cacheFile = path.join(tempdir, "conan-cache.tgz");
         const cacheHitKey = await cache.restoreCache([cacheFile], key, [key]);
         if (cacheHitKey == null) {
             core.info(`No cache hit found for ${key}`);
@@ -190,8 +195,8 @@ export class Conan {
     async save_cache(key: string): Promise<void> {
         core.startGroup("prepare the cache file");
         await exec(this.path, ["cache", "clean", "*"]);
-        const tempdir = process.env["RUNNER_TEMP"];
-        const cacheFile = `${tempdir}/conan-cache.tgz`;
+        const tempdir = process.env["RUNNER_TEMP"] || os.tmpdir();
+        const cacheFile = path.join(tempdir, "conan-cache.tgz");
         core.debug(`Writing cache file to ${cacheFile}`);
         await exec(this.path, [
             "cache",
