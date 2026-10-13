@@ -5,6 +5,7 @@ import nodeResolve from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
 import json from "@rollup/plugin-json";
 import terser from "@rollup/plugin-terser";
+import license from "rollup-plugin-license";
 
 const main_config = {
     input: "src/main.ts",
@@ -20,6 +21,13 @@ const main_config = {
         commonjs(),
         json(),
         terser(),
+        license({
+            banner: {
+                content: {
+                    file: "LICENSE",
+                },
+            },
+        }),
     ],
 };
 
