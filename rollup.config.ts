@@ -16,7 +16,9 @@ const main_config = {
         sourcemap: true,
     },
     plugins: [
-        typescript(),
+        typescript({
+            rootDir: "./src",
+        }),
         nodeResolve({ preferBuiltins: true }),
         commonjs(),
         json(),
@@ -40,7 +42,9 @@ const save_config = {
         sourcemap: true,
     },
     plugins: [
-        typescript(),
+        typescript({
+            rootDir: "./src",
+        }),
         nodeResolve({ preferBuiltins: true }),
         commonjs(),
         json(),

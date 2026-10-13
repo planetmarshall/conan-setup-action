@@ -1,7 +1,11 @@
-# See https://pre-commit.com for more information
-# See https://pre-commit.com/hooks.html for more hooks
+# https://github.com/j178/prek
 repos:
+  - repo: builtin
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
   - repo: https://github.com/mirrors-prettier/mirrors-prettier
-    rev: 'v3.9.6' # Use the sha / tag you want to point at
+    rev: 'v3.9.10' # Use the sha / tag you want to point at
     hooks:
       - id: prettier
