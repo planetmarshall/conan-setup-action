@@ -9,6 +9,9 @@ updates:
     directory: '/' # Location of package manifests
     schedule:
       interval: 'weekly'
+    ignore:
+      - dependency-name: 'typescript'
+        versions: ['~7'] # not compatible with github actions. See
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
