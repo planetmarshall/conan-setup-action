@@ -107,7 +107,7 @@ jobs:
           - name: install specific version
             runner: ubuntu-latest
             cache: true
-            version: 2.12.1
+            version: 2.29.1
 
     runs-on: ${{ matrix.runner }}
 
