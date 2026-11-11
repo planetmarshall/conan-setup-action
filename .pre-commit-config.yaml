@@ -3,7 +3,9 @@ repos:
   - repo: builtin
     hooks:
       - id: trailing-whitespace
+        exclude: dist
       - id: end-of-file-fixer
+        exclude: dist
       - id: check-added-large-files
   - repo: https://github.com/mirrors-prettier/mirrors-prettier
     rev: 'v3.9.10' # Use the sha / tag you want to point at
